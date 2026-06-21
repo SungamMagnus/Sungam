@@ -1,5 +1,5 @@
 :root {
-  --bg: #0e0e10;
+  --bg: #353942;
   --fg: #f4f4f4;
   --muted: #9a9a9a;
   --accent: #f4f4f4;
@@ -12,6 +12,7 @@
 
 body {
   margin: 0;
+  padding-top: 150px;
   background: var(--bg);
   color: var(--fg);
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -19,8 +20,15 @@ body {
 }
 
 .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   text-align: center;
-  padding: 3rem 1rem 1rem;
+  padding: 1.5rem 1rem 1rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
 }
 
 .site-header h1 {
@@ -31,11 +39,38 @@ body {
   text-transform: lowercase;
 }
 
+.logo {
+  display: flex;
+  justify-content: center;
+}
+
+.logo #logo-canvas {
+  display: block;
+  width: 360px;
+  height: 60px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.top-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1.2rem;
+  margin-top: 0.9rem;
+}
+
 .top-link {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-top: 0.9rem;
   color: var(--fg);
   text-decoration: none;
   font-size: 0.85rem;
@@ -189,6 +224,10 @@ body {
 }
 
 @media (max-width: 640px) {
+  body {
+    padding-top: 185px;
+  }
+
   .site-main {
     margin-top: 1.5rem;
     padding: 0 1rem;

@@ -14,8 +14,16 @@
 <body>
 
 <header class="site-header">
-  <h1>sungam.art</h1>
-  <a class="top-link" href="https://www.instagram.com/__sungam__/" target="_blank" rel="noopener"><img class="icon" src="icons/instagram.svg" alt="" width="16" height="16">Instagram</a>
+  <h1 class="logo">
+    <canvas id="logo-canvas" aria-hidden="true"></canvas>
+    <span class="sr-only">sungam.art</span>
+  </h1>
+  <div class="top-links">
+    <a class="top-link" href="https://www.instagram.com/__sungam__/" target="_blank" rel="noopener"><img class="icon" src="icons/instagram.svg" alt="" width="16" height="16">Instagram</a>
+    <a class="top-link" href="https://sungam.gumroad.com" target="_blank" rel="noopener"><img class="icon" src="icons/gumroad.svg" alt="" width="16" height="16">Gumroad</a>
+    <a class="top-link" href="https://www.youtube.com/@sungam/videos" target="_blank" rel="noopener"><img class="icon" src="icons/youtube.svg" alt="" width="16" height="16">Videos</a>
+    <a class="top-link" href="mailto:magnbir@gmail.com"><img class="icon" src="icons/envelope.svg" alt="" width="16" height="16">Contact</a>
+  </div>
 </header>
 
 <main class="site-main">
@@ -106,6 +114,7 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
+<script src="logo-shader.js"></script>
 
 </body>
 </html>
