@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -A \"Mozilla/5.0\" \"https://sungam.bandcamp.com/album/trgr\" -o /tmp/trgr.html)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -A \"Mozilla/5.0\" \"https://sungam.bandcamp.com/album/songs-for-dog-and-friend\" -o /tmp/sfdf.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"https://bandcamp.com/EmbeddedPlayer/album=2666216012/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"https://www.youtube.com/embed/Bao2R7quRUI\")"
+    ]
+  }
+}
