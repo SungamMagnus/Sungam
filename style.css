@@ -112,6 +112,10 @@ body {
   transition: opacity 0.15s ease;
 }
 
+.social-link .icon {
+  filter: brightness(0) invert(1);
+}
+
 .social-link:hover {
   opacity: 1;
 }
