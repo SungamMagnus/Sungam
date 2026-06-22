@@ -231,16 +231,27 @@ body {
 /* About */
 
 .about-content {
-  max-width: 640px;
+  max-width: 880px;
   margin: 0 auto 3rem;
 }
 
-.about-content h2 {
-  margin: 0 0 1.2rem;
-  font-size: 1.1rem;
-  font-weight: 300;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.about-body {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.about-photo {
+  width: 220px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  display: block;
+  margin-top: 3rem;
+}
+
+.about-text {
+  flex: 1;
+  min-width: 0;
 }
 
 .about-content h3 {
@@ -288,5 +299,14 @@ body {
 
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .about-body {
+    flex-direction: column;
+  }
+
+  .about-photo {
+    width: 160px;
+    margin: 0 auto;
   }
 }
