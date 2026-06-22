@@ -14,127 +14,71 @@
 <body>
 
 <header class="site-header">
-  <h1 class="logo">
-    <canvas id="logo-canvas" aria-hidden="true"></canvas>
-    <span class="sr-only">sungam.art</span>
-  </h1>
-  <div class="top-links">
-    <a class="top-link" href="https://www.instagram.com/__sungam__/" target="_blank" rel="noopener"><img class="icon" src="icons/instagram.svg" alt="" width="16" height="16">Instagram</a>
-    <a class="top-link" href="https://sungam.gumroad.com" target="_blank" rel="noopener"><img class="icon" src="icons/gumroad.svg" alt="" width="16" height="16">Gumroad</a>
-    <a class="top-link" href="https://www.youtube.com/@sungam/videos" target="_blank" rel="noopener"><img class="icon" src="icons/youtube.svg" alt="" width="16" height="16">Videos</a>
-    <a class="top-link" href="mailto:magnbir@gmail.com"><img class="icon" src="icons/envelope.svg" alt="" width="16" height="16">Contact</a>
+  <div class="header-row">
+    <a class="brand" href="#portfolio" data-tab-link="portfolio">
+      <canvas id="logo-canvas" aria-hidden="true"></canvas>
+      <span class="sr-only">sungam</span>
+    </a>
+
+    <nav class="tabs" role="tablist" aria-label="Site sections">
+      <button class="tab" id="tab-portfolio" type="button" role="tab" aria-selected="true" aria-controls="panel-portfolio" data-tab-link="portfolio">Portfolio</button>
+      <button class="tab" id="tab-about" type="button" role="tab" aria-selected="false" aria-controls="panel-about" data-tab-link="about">About</button>
+      <a class="tab" href="mailto:magnbir@gmail.com">Contact</a>
+    </nav>
+  </div>
+
+  <div class="social-row">
+    <a class="social-link" href="https://www.instagram.com/__sungam__/" target="_blank" rel="noopener" aria-label="Instagram"><img class="icon" src="icons/instagram.svg" alt="" width="16" height="16"></a>
+    <a class="social-link" href="https://www.youtube.com/@sungam" target="_blank" rel="noopener" aria-label="YouTube"><img class="icon" src="icons/youtube.svg" alt="" width="16" height="16"></a>
+    <a class="social-link" href="https://sungam.bandcamp.com" target="_blank" rel="noopener" aria-label="Bandcamp"><img class="icon" src="icons/bandcamp.svg" alt="" width="16" height="16"></a>
+    <a class="social-link" href="https://open.spotify.com/artist/68huo9mRfQg0QG0j0LgbL6?si=V7cz_R4qQu2yPX_qafAMXg" target="_blank" rel="noopener" aria-label="Spotify"><img class="icon" src="icons/spotify.svg" alt="" width="16" height="16"></a>
+    <a class="social-link" href="https://music.apple.com/us/artist/sungam/1445537226" target="_blank" rel="noopener" aria-label="Apple Music"><img class="icon" src="icons/applemusic.svg" alt="" width="16" height="16"></a>
+    <a class="social-link" href="https://sungam.gumroad.com" target="_blank" rel="noopener" aria-label="Gumroad"><img class="icon" src="icons/gumroad.svg" alt="" width="16" height="16"></a>
   </div>
 </header>
 
 <main class="site-main">
 
-  <section class="artist" id="sungam">
-    <h2>Sungam</h2>
+  <section id="panel-portfolio" class="panel" role="tabpanel" aria-labelledby="tab-portfolio">
 
-    <div class="embeds">
-      <div class="embed video">
-        <iframe src="https://www.youtube.com/embed/Bao2R7quRUI"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                loading="lazy"></iframe>
-      </div>
-
-      <div class="embed">
-        <iframe style="border: 0; width: 100%; height: 442px;"
-                src="https://bandcamp.com/EmbeddedPlayer/album=2666216012/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/"
-                seamless loading="lazy">
-          <a href="https://sungam.bandcamp.com/album/songs-for-dog-and-friend">Songs For Dog And Friend by Sungam</a>
-        </iframe>
-      </div>
+    <div class="filters" role="radiogroup" aria-label="Filter portfolio by type">
+      <button class="filter-pill" type="button" role="radio" data-type="music" aria-checked="true">Music</button>
+      <button class="filter-pill" type="button" role="radio" data-type="video" aria-checked="false">Video</button>
+      <button class="filter-pill" type="button" role="radio" data-type="device" aria-checked="false">Devices</button>
     </div>
 
-    <div class="links">
-      <a class="btn" href="https://sungam.bandcamp.com" target="_blank" rel="noopener"><img class="icon" src="icons/bandcamp.svg" alt="" width="16" height="16">Bandcamp</a>
-      <a class="btn" href="https://www.youtube.com/@sungam" target="_blank" rel="noopener"><img class="icon" src="icons/youtube.svg" alt="" width="16" height="16">Videos</a>
-      <a class="btn" href="https://music.youtube.com/@sungam" target="_blank" rel="noopener"><img class="icon" src="icons/youtubemusic.svg" alt="" width="16" height="16">YouTube Music</a>
-      <a class="btn" href="https://open.spotify.com/artist/68huo9mRfQg0QG0j0LgbL6?si=V7cz_R4qQu2yPX_qafAMXg" target="_blank" rel="noopener"><img class="icon" src="icons/spotify.svg" alt="" width="16" height="16">Spotify</a>
-      <a class="btn" href="https://music.apple.com/us/artist/sungam/1445537226" target="_blank" rel="noopener"><img class="icon" src="icons/applemusic.svg" alt="" width="16" height="16">Apple Music</a>
-    </div>
+    <div class="grid" id="portfolio-grid"></div>
+
+    <p class="empty-state" id="portfolio-empty" hidden>Nothing to show — toggle a filter above.</p>
+
   </section>
 
-  <section class="artist" id="4411">
-    <h2>4411</h2>
-
-    <div class="embeds">
-      <div class="embed video">
-        <iframe src="https://www.youtube.com/embed/L84L1lRV6ug"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                loading="lazy"></iframe>
-      </div>
-
-      <div class="embed">
-        <iframe style="border: 0; width: 100%; height: 442px;"
-                src="https://bandcamp.com/EmbeddedPlayer/album=4068999324/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/"
-                seamless loading="lazy">
-          <a href="https://sungam.bandcamp.com/album/4411-by-4411">4411 by 4411</a>
-        </iframe>
-      </div>
-    </div>
-
-    <div class="links">
-      <a class="btn" href="https://sungam.bandcamp.com/album/4411-by-4411" target="_blank" rel="noopener"><img class="icon" src="icons/bandcamp.svg" alt="" width="16" height="16">Bandcamp</a>
-      <a class="btn" href="https://open.spotify.com/artist/5TReTYdYeqZP93DdBAyZsJ?si=qGCgxcZKSASmiCLInIVDbQ" target="_blank" rel="noopener"><img class="icon" src="icons/spotify.svg" alt="" width="16" height="16">Spotify</a>
-      <a class="btn" href="https://music.apple.com/us/artist/4411/1566215614" target="_blank" rel="noopener"><img class="icon" src="icons/applemusic.svg" alt="" width="16" height="16">Apple Music</a>
+  <section id="panel-about" class="panel" role="tabpanel" aria-labelledby="tab-about" hidden>
+    <div class="about-content">
+      <h2>About</h2>
+      <p>
+        Sungam is a music project exploring electronic and ambient soundscapes,
+        alongside original video work and MaxForLive devices for Ableton Live.
+        Replace this paragraph with your real bio.
+      </p>
+      <p>
+        Based wherever you'd like to say you're based. Add a sentence or two
+        about your background, influences, or what you're currently working on.
+      </p>
     </div>
   </section>
 
 </main>
 
 <footer class="site-footer">
-  <div class="footer-inner">
-    <h2>MaxforLive devices</h2>
-
-     <div class="embed cta">
-        <p class="cta-label">Available at</p>
-        <a class="btn" href="https://sungam.gumroad.com" target="_blank" rel="noopener"><img class="icon" src="icons/gumroad.svg" alt="" width="16" height="16">Gumroad</a>
-      </div>
-
-
-    <div class="embeds">
-    
-      <div class="embed video">
-        <iframe src="https://www.youtube.com/embed/XfcMw3nIYhY"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                loading="lazy"></iframe>
-      </div>
-
-      <div class="embed video">
-        <iframe src="https://www.youtube.com/embed/BTAp6ESkVaU"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                loading="lazy"></iframe>
-      </div>
-
-      <div class="embed video">
-        <iframe src="https://www.youtube.com/embed/nfUKjjE_qu4"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                loading="lazy"></iframe>
-      </div>
-
-      
-    </div>
-
-    <p>&copy; <span id="year"></span> sungam.art</p>
-  </div>
+  <p>&copy; <span id="year"></span> sungam.art</p>
 </footer>
 
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 <script src="logo-shader.js"></script>
+<script src="portfolio.js"></script>
 
 </body>
 </html>

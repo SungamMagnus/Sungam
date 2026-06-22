@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "Sungam",
+			"path": "Sungam"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Sungam-Portfolio"
+	}
+}

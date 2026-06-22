@@ -38,7 +38,7 @@
     '  float mask = texture2D(u_mask, v_uv).a;' +
     '  if (mask < 0.02) { discard; }' +
     '  float n = 5.0;' +
-    '  float t = fract(v_uv.x * 0.6 + u_time * 0.12) * n;' +
+    '  float t = fract(v_uv.x * 0.6 + u_time * 0.22) * n;' +
     '  vec3 col = vec3(0.0);' +
     '  for (int i = 0; i < 5; i++) {' +
     '    float center = float(i);' +
@@ -111,7 +111,7 @@
     maskCtx.textAlign = 'center';
     maskCtx.textBaseline = 'middle';
     maskCtx.font = '300 ' + Math.round(h * 0.9) + 'px "Helvetica Neue", Helvetica, Arial, sans-serif';
-    maskCtx.fillText('sungam.art', w / 2, h / 2 + 1);
+    maskCtx.fillText('sungam', w / 2, h / 2 + 1);
 
     gl.bindTexture(gl.TEXTURE_2D, maskTexture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
