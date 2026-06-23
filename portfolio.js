@@ -90,7 +90,7 @@
       title: "5̵̃͜ẗ̴̫́0̶̬̀c̶̨̒ḵ̴̊",
       link: "https://www.youtube.com/watch?v=-19FRYKPNdc",
       videoId: "-19FRYKPNdc",
-      image: "Pics/Sungam - 5̵̃͜ẗ̴̫́0̶̬̀c̶̨̒ḵ̴̊.webp"
+      image: "Pics/Sungam - 5̵̃͜ẗ̴̫́0̶̬̀c̶̨̒ḵ̴̊.webp"
     },
     {
       type: "video",
