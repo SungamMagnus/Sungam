@@ -292,6 +292,9 @@
         (thumbSrc
           ? '<img class="card-thumb-img" src="' + thumbSrc + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
           : '') +
+        (item.type === 'music' || item.type === 'video'
+          ? '<div class="card-overlay"><span class="card-overlay-title">' + item.title + '</span></div>'
+          : '') +
       '</div>';
 
     return card;
