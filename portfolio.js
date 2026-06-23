@@ -3,7 +3,7 @@
   // (YouTube publish date for video/device, Bandcamp release date for
   // music) — video, music, and device entries are interleaved, not
   // grouped. Add new items here. `image` is optional — if you upload a
-  // screenshot, point `image` at it (e.g. "Pics/your-file.png") and it
+  // screenshot, point `image` at it (e.g. "Pics/your-file.webp") and it
   // takes priority. Video items fall back to the real YouTube thumbnail
   // when no image is set; music/device items fall back to a plain icon.
   var PORTFOLIO_ITEMS = [
@@ -13,21 +13,21 @@
       title: "In case of fire",
       link: "https://www.youtube.com/watch?v=Bao2R7quRUI",
       videoId: "Bao2R7quRUI",
-      image: "Pics/Sungam - In case of fire.png"
+      image: "Pics/Sungam - In case of fire.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "Songs for dog and friend",
       link: "https://sungam.bandcamp.com/album/songs-for-dog-and-friend",
-      image: "Pics/music-pics/sungam - songs for dog and friend.png"
+      image: "Pics/music-pics/sungam - songs for dog and friend.webp"
     },
     {
       type: "device",
       artist: "Sungam",
       title: "Wordplay",
       link: "https://sungam.gumroad.com/l/qrgnn",
-      image: "Pics/Wordplay.png",
+      image: "Pics/Wordplay.webp",
       description: "A creative text-based MIDI sequencer — type a word or phrase and its letters become notes, with forward, backward, and ping-pong playback plus scale-aware sequencing."
     },
     {
@@ -35,7 +35,7 @@
       artist: "Sungam",
       title: "if/maybe",
       link: "https://sungam.gumroad.com/l/xilyb",
-      image: "Pics/If:maybe.png",
+      image: "Pics/If:maybe.webp",
       description: "A two-channel probability randomizer that maps to any control. Set a custom range for each channel, then dial in the odds between them for controlled chaos."
     },
     {
@@ -43,7 +43,7 @@
       artist: "Sungam",
       title: "PH-830",
       link: "https://sungam.gumroad.com/l/nqooz",
-      image: "Pics/PH-830.png",
+      image: "Pics/PH-830.webp",
       description: "An emulation of the rare Roland PH-830 analog phase shifter, with added input drive, resonance bite, and L/R link controls on top of the original's quirky character."
     },
     {
@@ -51,14 +51,14 @@
       artist: "Sungam",
       title: "trgr",
       link: "https://sungam.bandcamp.com/album/trgr",
-      image: "Pics/music-pics/sungam - trigger.png"
+      image: "Pics/music-pics/sungam - trigger.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "Slitch",
       link: "https://sungam.bandcamp.com/album/slitch",
-      image: "Pics/music-pics/sungam - slitch - album.png"
+      image: "Pics/music-pics/sungam - slitch - album.webp"
     },
     {
       type: "video",
@@ -66,7 +66,7 @@
       title: "Sturta",
       link: "https://www.youtube.com/watch?v=9A_ymutY5LM",
       videoId: "9A_ymutY5LM",
-      image: "Pics/Sungam - Sturta.png"
+      image: "Pics/Sungam - Sturta.webp"
     },
     {
       type: "video",
@@ -74,7 +74,7 @@
       title: "opycra",
       link: "https://www.youtube.com/watch?v=AbNabTsCdzc",
       videoId: "AbNabTsCdzc",
-      image: "Pics/Sungam - opycra.png"
+      image: "Pics/Sungam - opycra.webp"
     },
     {
       type: "video",
@@ -82,7 +82,7 @@
       title: "Slitch",
       link: "https://www.youtube.com/watch?v=AqB0M7d1msY",
       videoId: "AqB0M7d1msY",
-      image: "Pics/Sungam - Slitch.png"
+      image: "Pics/Sungam - Slitch.webp"
     },
     {
       type: "video",
@@ -90,7 +90,7 @@
       title: "5̵̃͜ẗ̴̫́0̶̬̀c̶̨̒ḵ̴̊",
       link: "https://www.youtube.com/watch?v=-19FRYKPNdc",
       videoId: "-19FRYKPNdc",
-      image: "Pics/Sungam - 5̵̃͜ẗ̴̫́0̶̬̀c̶̨̒ḵ̴̊.png"
+      image: "Pics/Sungam - 5̵̃͜ẗ̴̫́0̶̬̀c̶̨̒ḵ̴̊.webp"
     },
     {
       type: "video",
@@ -98,7 +98,7 @@
       title: "n̷3̴u̶r̶4̶!̴",
       link: "https://www.youtube.com/watch?v=yBGh4EL3rmo",
       videoId: "yBGh4EL3rmo",
-      image: "Pics/Sungam - n̷3̴u̶r̶4̶!̴.png"
+      image: "Pics/Sungam - n̷3̴u̶r̶4̶!̴.webp"
     },
     {
       type: "video",
@@ -106,7 +106,7 @@
       title: "0̷p̶3̷r̵a̸",
       link: "https://www.youtube.com/watch?v=tVLmQVM8Y5c",
       videoId: "tVLmQVM8Y5c",
-      image: "Pics/Sungam - 0̷p̶3̷r̵a̸.png"
+      image: "Pics/Sungam - 0̷p̶3̷r̵a̸.webp"
     },
     {
       type: "video",
@@ -114,28 +114,28 @@
       title: ":̷_̶\\̴-̴3̴",
       link: "https://www.youtube.com/watch?v=IL1rlSL09Rs",
       videoId: "IL1rlSL09Rs",
-      image: "Pics/Sungam - :̷_̶\\̴-̴3̴.png"
+      image: "Pics/Sungam - :̷_̶\\̴-̴3̴.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "7̸r̴v̴/̴n̷3̷u̷",
       link: "https://sungam.bandcamp.com/album/7-r-v-n-3-u",
-      image: "Pics/music-pics/sungam - 7̸r̴v̴:̴n̷3̷u̷.png"
+      image: "Pics/music-pics/sungam - 7̸r̴v̴:̴n̷3̷u̷.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "Pels",
       link: "https://sungam.bandcamp.com/album/pels",
-      image: "Pics/music-pics/sungam - pels.png"
+      image: "Pics/music-pics/sungam - pels.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "Long Exposure",
       link: "https://sungam.bandcamp.com/album/long-exposure",
-      image: "Pics/music-pics/sungam - long exposure.png"
+      image: "Pics/music-pics/sungam - long exposure.webp"
     },
     {
       type: "video",
@@ -143,7 +143,7 @@
       title: "rigid",
       link: "https://www.youtube.com/watch?v=2R8njrjOS6Y",
       videoId: "2R8njrjOS6Y",
-      image: "Pics/sungam - rigid.png"
+      image: "Pics/sungam - rigid.webp"
     },
     {
       type: "video",
@@ -151,7 +151,7 @@
       title: "harsh",
       link: "https://www.youtube.com/watch?v=7IpZBybBcpY",
       videoId: "7IpZBybBcpY",
-      image: "Pics/sungam - harsh .png"
+      image: "Pics/sungam - harsh .webp"
     },
     {
       type: "video",
@@ -159,14 +159,14 @@
       title: "maneuver",
       link: "https://www.youtube.com/watch?v=bJZA2nDX_SU",
       videoId: "bJZA2nDX_SU",
-      image: "Pics/sungam - maneuver.png"
+      image: "Pics/sungam - maneuver.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "powers that be",
       link: "https://sungam.bandcamp.com/album/powers-that-be",
-      image: "Pics/music-pics/sungam - powers that be.png"
+      image: "Pics/music-pics/sungam - powers that be.webp"
     },
     {
       type: "video",
@@ -174,7 +174,7 @@
       title: "optimism",
       link: "https://www.youtube.com/watch?v=L84L1lRV6ug",
       videoId: "L84L1lRV6ug",
-      image: "Pics/4411 - optimism.png"
+      image: "Pics/4411 - optimism.webp"
     },
     {
       type: "video",
@@ -182,21 +182,21 @@
       title: "1872",
       link: "https://www.youtube.com/watch?v=mJHtHz7akyE",
       videoId: "mJHtHz7akyE",
-      image: "Pics/4411 - 1872.png"
+      image: "Pics/4411 - 1872.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "occult atoms",
       link: "https://sungam.bandcamp.com/album/occult-atoms",
-      image: "Pics/music-pics/Sungam - Occult atoms.png"
+      image: "Pics/music-pics/Sungam - Occult atoms.webp"
     },
     {
       type: "music",
       artist: "4411",
       title: "4411 by 4411",
       link: "https://sungam.bandcamp.com/album/4411-by-4411",
-      image: "Pics/music-pics/4411 - 4411.png"
+      image: "Pics/music-pics/4411 - 4411.webp"
     },
     {
       type: "video",
@@ -204,14 +204,14 @@
       title: "Kalımoderıx",
       link: "https://www.youtube.com/watch?v=Rw42Z-WXrTI",
       videoId: "Rw42Z-WXrTI",
-      image: "Pics/Sungam - Kalımoderıx.png"
+      image: "Pics/Sungam - Kalımoderıx.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "All the Rest",
       link: "https://sungam.bandcamp.com/album/all-the-rest",
-      image: "Pics/music-pics/Sungam - All the rest.png"
+      image: "Pics/music-pics/Sungam - All the rest.webp"
     },
     {
       type: "video",
@@ -219,7 +219,7 @@
       title: "MauA4",
       link: "https://www.youtube.com/watch?v=m8bp3Akqc7U",
       videoId: "m8bp3Akqc7U",
-      image: "Pics/Sungam - MauA4.png"
+      image: "Pics/Sungam - MauA4.webp"
     },
     {
       type: "video",
@@ -227,21 +227,21 @@
       title: "Stim",
       link: "https://www.youtube.com/watch?v=30TtE5WJcfk",
       videoId: "30TtE5WJcfk",
-      image: "Pics/Sungam - Stim.png"
+      image: "Pics/Sungam - Stim.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "Skogen",
       link: "https://sungam.bandcamp.com/album/skogen",
-      image: "Pics/music-pics/Sungam - Skogen.png"
+      image: "Pics/music-pics/Sungam - Skogen.webp"
     },
     {
       type: "music",
       artist: "Sungam",
       title: "City Pops",
       link: "https://sungam.bandcamp.com/album/city-pops",
-      image: "Pics/music-pics/Sungam - City pops.png"
+      image: "Pics/music-pics/Sungam - City pops.webp"
     }
   ];
 
