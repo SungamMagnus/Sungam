@@ -51,7 +51,7 @@
       artist: "Sungam",
       title: "Polysteps",
       link: "https://sungam.gumroad.com/l/wlced",
-      image: "Pics/Polysteps.webp",
+      image: "Pics/polysteps.webp",
       description: "A polyrhythmic step sequencer for Max for Live with 6 independently configurable tracks — set note, octave, and velocity range per track, with per-track gate randomization for evolving rhythms and arpeggios."
     },
     {
