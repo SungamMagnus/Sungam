@@ -27,21 +27,24 @@
       artist: "Sungam",
       title: "Wordplay",
       link: "https://sungam.gumroad.com/l/qrgnn",
-      image: "Pics/Wordplay.png"
+      image: "Pics/Wordplay.png",
+      description: "A creative text-based MIDI sequencer — type a word or phrase and its letters become notes, with forward, backward, and ping-pong playback plus scale-aware sequencing."
     },
     {
       type: "device",
       artist: "Sungam",
       title: "if/maybe",
       link: "https://sungam.gumroad.com/l/xilyb",
-      image: "Pics/If:maybe.png"
+      image: "Pics/If:maybe.png",
+      description: "A two-channel probability randomizer that maps to any control. Set a custom range for each channel, then dial in the odds between them for controlled chaos."
     },
     {
       type: "device",
       artist: "Sungam",
       title: "PH-830",
       link: "https://sungam.gumroad.com/l/nqooz",
-      image: "Pics/PH-830.png"
+      image: "Pics/PH-830.png",
+      description: "An emulation of the rare Roland PH-830 analog phase shifter, with added input drive, resonance bite, and L/R link controls on top of the original's quirky character."
     },
     {
       type: "music",
@@ -286,10 +289,40 @@
     return card;
   }
 
+  function renderDeviceRow(item) {
+    var row = document.createElement('a');
+    row.className = 'device-row';
+    row.href = item.link;
+    row.target = '_blank';
+    row.rel = 'noopener';
+    row.dataset.type = item.type;
+
+    var thumbSrc = thumbFor(item);
+    var fallbackIcon = TYPE_ICONS[item.type];
+
+    row.innerHTML =
+      '<div class="device-photo">' +
+        '<img class="card-thumb-fallback" src="' + fallbackIcon + '" alt="" width="28" height="28">' +
+        (thumbSrc
+          ? '<img class="card-thumb-img" src="' + thumbSrc + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+          : '') +
+      '</div>' +
+      '<div class="device-info">' +
+        '<h3 class="device-title">' + item.title + '</h3>' +
+        '<p class="device-description">' + item.description + '</p>' +
+      '</div>';
+
+    return row;
+  }
+
   function render() {
     grid.innerHTML = '';
     var visible = PORTFOLIO_ITEMS.filter(function (item) { return item.type === activeType; });
-    visible.forEach(function (item) { grid.appendChild(renderCard(item)); });
+    var isDeviceView = activeType === 'device';
+    grid.classList.toggle('grid--devices', isDeviceView);
+    visible.forEach(function (item) {
+      grid.appendChild(isDeviceView ? renderDeviceRow(item) : renderCard(item));
+    });
     emptyState.hidden = visible.length > 0;
   }
 

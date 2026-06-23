@@ -176,10 +176,64 @@ body {
   gap: 1.4rem;
 }
 
+.grid.grid--devices {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .empty-state {
   text-align: center;
   color: var(--muted);
   margin: 3rem 0;
+}
+
+.device-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  color: var(--fg);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.2rem;
+  background: var(--card-bg);
+  transition: border-color 0.15s ease;
+}
+
+.device-row:hover {
+  border-color: var(--fg);
+}
+
+.device-photo {
+  position: relative;
+  width: 320px;
+  flex-shrink: 0;
+  aspect-ratio: 16 / 9;
+  background: #0e1011;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.device-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.device-title {
+  margin: 0 0 0.6rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.device-description {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 .card {
@@ -312,5 +366,13 @@ body {
   .about-photo {
     width: 160px;
     margin: 0 auto;
+  }
+
+  .device-row {
+    flex-direction: column;
+  }
+
+  .device-photo {
+    width: 100%;
   }
 }
