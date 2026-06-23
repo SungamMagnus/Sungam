@@ -28,7 +28,7 @@
       title: "Wordplay",
       link: "https://sungam.gumroad.com/l/qrgnn",
       image: "Pics/Wordplay.webp",
-      description: "A creative text-based MaxforLive MIDI sequencer — type a word or phrase and its letters become notes, with forward, backward, and ping-pong playback plus scale-aware sequencing."
+      description: "A creative text-based MaxforLive sequencer — type a word or phrase and its letters become notes, with forward, backward, and ping-pong playback plus scale-aware sequencing."
     },
     {
       type: "device",
@@ -44,7 +44,7 @@
       title: "PH-830",
       link: "https://sungam.gumroad.com/l/nqooz",
       image: "Pics/PH-830.webp",
-      description: "An MaxforLive emulation of the rare Roland PH-830 analog phase shifter, with added input drive, resonance bite, and L/R link controls on top of the original's quirky character."
+      description: "A MaxforLive emulation of the rare Roland PH-830 analog phase shifter, with added input drive, resonance boost, and L/R link controls on top of the original's quirky character."
     },
     {
       type: "music",
