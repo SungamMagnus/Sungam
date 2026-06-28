@@ -41,10 +41,16 @@
 
   <section id="panel-portfolio" class="panel" role="tabpanel" aria-labelledby="tab-portfolio">
 
-    <div class="filters" role="radiogroup" aria-label="Filter portfolio by type">
+    <div class="filters" id="type-filters" role="radiogroup" aria-label="Filter portfolio by type">
       <button class="filter-pill" type="button" role="radio" data-type="music" aria-checked="true">Music</button>
       <button class="filter-pill" type="button" role="radio" data-type="video" aria-checked="false">Video</button>
+      <button class="filter-pill" type="button" role="radio" data-type="visual" aria-checked="false">Visual</button>
       <button class="filter-pill" type="button" role="radio" data-type="device" aria-checked="false">Devices</button>
+    </div>
+
+    <div class="filters filters--sub" id="visual-style-filters" role="radiogroup" aria-label="Filter visual style" hidden>
+      <button class="filter-pill filter-pill--sub" type="button" role="radio" data-style="muted" aria-checked="true">Muted</button>
+      <button class="filter-pill filter-pill--sub" type="button" role="radio" data-style="pronounced" aria-checked="false">Pronounced</button>
     </div>
 
     <div class="grid" id="portfolio-grid"></div>
@@ -82,6 +88,13 @@
   </section>
 
 </main>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lightbox-close" type="button" aria-label="Close">&times;</button>
+  <button class="lightbox-nav lightbox-prev" type="button" aria-label="Previous photo">&#8249;</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  <button class="lightbox-nav lightbox-next" type="button" aria-label="Next photo">&#8250;</button>
+</div>
 
 <footer class="site-footer">
   <p>&copy; <span id="year"></span> sungam.art</p>
