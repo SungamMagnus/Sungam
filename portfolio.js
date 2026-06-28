@@ -56,6 +56,14 @@
       description: "A polyrhythmic step sequencer for Max for Live with 6 independently configurable tracks — set note, octave, and velocity range per track, with per-track gate randomization for evolving rhythms and arpeggios."
     },
     {
+      type: "device",
+      artist: "Sungam",
+      title: "Flexus",
+      link: "https://sungam.gumroad.com/l/kbnmkx",
+      image: "Pics/devices/Flexus.webp",
+      description: "A strange reverb/delay hybrid where the delay, reverb size, feedback and decay controls are stacked upon each other. This creates interesting blends between the two and allows for lovely textures. Loosely based on and inspired by the Make Noise Plexiphon."
+    },
+    {
       type: "music",
       artist: "Sungam",
       title: "trgr",
