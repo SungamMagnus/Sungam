@@ -263,6 +263,22 @@
     {
       type: "visual",
       artist: "Sungam",
+      title: "Shoes",
+      style: "muted",
+      image: "Pics/visual/Muted/thumbs/shoes.webp",
+      fullImage: "Pics/visual/Muted/shoes.webp"
+    },
+    {
+      type: "visual",
+      artist: "Sungam",
+      title: "Togstopp",
+      style: "muted",
+      image: "Pics/visual/Muted/thumbs/togstopp.webp",
+      fullImage: "Pics/visual/Muted/togstopp.webp"
+    },
+    {
+      type: "visual",
+      artist: "Sungam",
       title: "606",
       style: "muted",
       image: "Pics/visual/Muted/thumbs/606.webp",
@@ -363,6 +379,14 @@
       style: "muted",
       image: "Pics/visual/Muted/thumbs/trethoka.webp",
       fullImage: "Pics/visual/Muted/trethoka.webp"
+    },
+    {
+      type: "visual",
+      artist: "Sungam",
+      title: "Rafboks",
+      style: "pronounced",
+      image: "Pics/visual/Pronounced/thumbs/rafboks.webp",
+      fullImage: "Pics/visual/Pronounced/rafboks.webp"
     },
     {
       type: "visual",
