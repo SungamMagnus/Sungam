@@ -11,10 +11,24 @@
     {
       type: "video",
       artist: "Sungam",
+      title: "From Recipes to Puppies to Violence in two scrolls",
+      link: "https://vimeo.com/1212893021",
+      image: "Pics/video/frompuppies.webp"
+    },
+    {
+      type: "video",
+      artist: "Sungam",
       title: "In case of fire",
       link: "https://www.youtube.com/watch?v=Bao2R7quRUI",
       videoId: "Bao2R7quRUI",
       image: "Pics/video/Sungam - In case of fire.webp"
+    },
+    {
+      type: "music",
+      artist: "Sungam",
+      title: "From Recipes to Puppies to Violence in two scrolls",
+      link: "https://sungam.bandcamp.com/album/from-recipes-to-puppies-to-violence-in-two-scrolls",
+      image: "Pics/music/frompuppies.webp"
     },
     {
       type: "music",
