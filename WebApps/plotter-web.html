@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PLOTTER — drawing sequencer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ede7da;
+    --sheet:#fcfcfa;
+    --ink:#2c6058;
+    --ink-soft:#7d9c96;
+    --scale-row:#e7f0ed;
+    --root-row:#d3e3df;
+    --line:#d2ded9;
+    --bar-line:#9fbab4;
+    --read-head:#b4593c;
+    --on-text:#ede7da;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:#e4ded1;color:var(--ink);
+    font-family:"DM Mono",ui-monospace,Menlo,monospace;font-size:12px;
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .frame{
+    flex:1;min-height:0;margin:14px;border:2px solid var(--ink);background:var(--paper);
+    display:flex;flex-direction:column;padding:18px 22px 22px;
+  }
+
+  .masthead{display:flex;align-items:baseline;gap:22px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid rgba(44,96,88,.35)}
+  h1{margin:0;font-size:28px;font-weight:500;letter-spacing:.22em}
+  .tagline{margin:0;font-size:13px;opacity:.75}
+
+  .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:14px}
+  .row .push{margin-left:auto}
+  .gap{width:18px}
+
+  button,select{
+    font-family:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink);background:transparent;border:1.5px solid var(--ink);border-radius:0;
+    padding:0 14px;height:38px;cursor:pointer;
+  }
+  select{padding:0 8px;text-transform:none;letter-spacing:.06em;height:32px}
+  button:hover,select:hover{background:rgba(44,96,88,.08)}
+  button[aria-pressed="true"],button.primary{background:var(--ink);color:var(--on-text)}
+  button.dashed{border-style:dashed}
+  button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--read-head);outline-offset:2px}
+  .seg{display:flex}
+  .seg button{margin-left:-1.5px}
+  .seg button:first-child{margin-left:0}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:150px;background:transparent}
+  input[type=range]::-webkit-slider-runnable-track{height:1.5px;background:var(--ink-soft)}
+  input[type=range]::-moz-range-track{height:1.5px;background:var(--ink-soft)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:2px;height:18px;background:var(--ink);margin-top:-8px}
+  input[type=range]::-moz-range-thumb{width:2px;height:18px;border:0;border-radius:0;background:var(--ink)}
+  .readout{min-width:30px;letter-spacing:.1em}
+  input[type=number]{
+    font-family:inherit;font-size:12px;color:var(--ink);background:transparent;
+    border:1.5px solid var(--ink);border-radius:0;padding:0 6px;height:32px;width:70px;
+  }
+
+  .toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;letter-spacing:.12em;text-transform:uppercase;user-select:none}
+  .toggle input{position:absolute;opacity:0;pointer-events:none}
+  .toggle .box{width:15px;height:15px;border:1.5px solid var(--ink-soft);display:grid;place-items:center}
+  .toggle input:checked + .box{background:var(--ink);border-color:var(--ink)}
+  .toggle input:checked + .box::after{content:"×";color:var(--on-text);font-size:13px;line-height:1}
+  .toggle input:not(:checked) ~ .lbl{color:var(--ink-soft)}
+  .toggle input:focus-visible + .box{outline:2px solid var(--read-head);outline-offset:2px}
+
+  .board{flex:1;min-height:0;margin-top:16px;border:1.5px solid var(--ink)}
+  canvas{display:block;width:100%;height:100%;touch-action:none;cursor:none}
+  @media (max-width:820px){
+    h1{font-size:22px}
+    .tagline{display:none}
+    .frame{padding:12px}
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+  <header class="masthead">
+    <h1>PLOTTER</h1>
+    <p class="tagline">draw a picture. it plays left to right.</p>
+  </header>
+
+  <div class="row">
+    <div class="seg">
+      <button id="btnPencil" aria-pressed="true">Pencil</button>
+      <button id="btnEraser" aria-pressed="false">Eraser</button>
+    </div>
+    <span class="gap"></span>
+    <input type="range" id="nib" min="2" max="26" step="1" value="6">
+    <span class="readout" id="nibValue">06</span>
+    <span class="gap"></span>
+    <button id="btnUndo">Undo</button>
+    <button id="btnClear">Clear</button>
+    <button id="btnGuides" aria-pressed="true">Guides</button>
+
+    <span class="push"></span>
+    <button id="btnPlay" class="primary">Play</button>
+    <button id="btnLoop" aria-pressed="true">Loop</button>
+    <button id="btnMidi">Export MIDI</button>
+    <button id="btnPng" class="dashed">Save PNG</button>
+  </div>
+
+  <div class="row">
+    <select id="key"></select>
+    <select id="scale"></select>
+    <label class="toggle"><input type="checkbox" id="snap" checked><span class="box"></span><span class="lbl">Snap to scale</span></label>
+    <span class="gap"></span>
+    <select id="lowOct"></select>
+    <select id="octs">
+      <option>2 OCT</option><option>3 OCT</option><option selected>4 OCT</option><option>5 OCT</option><option>6 OCT</option>
+    </select>
+    <select id="bars">
+      <option>1 BAR</option><option>2 BARS</option><option selected>4 BARS</option><option>8 BARS</option>
+    </select>
+    <select id="res">
+      <option>1/4</option><option>1/8</option><option selected>1/16</option><option>1/32</option>
+    </select>
+    <span class="gap"></span>
+    <input type="number" id="bpm" min="20" max="300" value="140">
+    <select id="wave">
+      <option value="sawtooth">SAW</option><option value="square">SQUARE</option>
+      <option value="triangle" selected>TRIANGLE</option><option value="sine">SINE</option>
+    </select>
+    <label class="toggle"><input type="checkbox" id="voice" checked><span class="box"></span><span class="lbl">Voice</span></label>
+    <span class="gap"></span>
+    <label class="toggle"><input type="checkbox" id="midiOut"><span class="box"></span><span class="lbl">MIDI out</span></label>
+    <select id="midiPort" style="display:none"></select>
+  </div>
+
+  <div class="board"><canvas id="board"></canvas></div>
+</div>
+
+<script>
+/* ============================================================
+   scales — Ableton Live's default set
+   ============================================================ */
+const SCALES = {
+  "Major":[0,2,4,5,7,9,11], "Minor":[0,2,3,5,7,8,10], "Dorian":[0,2,3,5,7,9,10],
+  "Mixolydian":[0,2,4,5,7,9,10], "Lydian":[0,2,4,6,7,9,11], "Phrygian":[0,1,3,5,7,8,10],
+  "Locrian":[0,1,3,5,6,8,10], "Whole Tone":[0,2,4,6,8,10], "Half-whole Dim.":[0,1,3,4,6,7,9,10],
+  "Whole-half Dim.":[0,2,3,5,6,8,9,11], "Minor Blues":[0,3,5,6,7,10], "Minor Pentatonic":[0,3,5,7,10],
+  "Major Pentatonic":[0,2,4,7,9], "Harmonic Minor":[0,2,3,5,7,8,11], "Harmonic Major":[0,2,4,5,7,8,11],
+  "Dorian #4":[0,2,3,6,7,9,10], "Phrygian Dominant":[0,1,4,5,7,8,10], "Melodic Minor":[0,2,3,5,7,9,11],
+  "Lydian Augmented":[0,2,4,6,8,9,11], "Lydian Dominant":[0,2,4,6,7,9,10], "Super Locrian":[0,1,3,4,6,8,10],
+  "8-Tone Spanish":[0,1,3,4,5,6,8,10], "Bhairav":[0,1,4,5,7,8,11], "Hungarian Minor":[0,2,3,6,7,8,11],
+  "Hirajoshi":[0,2,3,7,8], "In-Sen":[0,1,5,7,10], "Iwato":[0,1,5,6,10], "Kumoi":[0,2,3,7,9],
+  "Pelog Selisir":[0,1,3,7,8], "Pelog Tembung":[0,1,5,7,8],
+  "Messiaen 1":[0,2,4,6,8,10], "Messiaen 2":[0,1,3,4,6,7,9,10], "Messiaen 3":[0,2,3,4,6,7,8,10,11],
+  "Messiaen 4":[0,1,2,5,6,7,8,11], "Messiaen 5":[0,1,5,6,7,11], "Messiaen 6":[0,2,4,5,6,8,10,11],
+  "Messiaen 7":[0,1,2,3,5,6,7,8,9,11], "Chromatic":[0,1,2,3,4,5,6,7,8,9,10,11]
+};
+const NOTE_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+
+const S = {
+  tool:"pencil", nib:6, guides:true,
+  root:0, scale:"Phrygian", snap:true, lowOct:2, octs:4,
+  bars:4, stepsPerBeat:4, bpm:140, wave:"triangle",
+  voice:true, midiOut:false, loop:true, gate:0.95
+};
+
+const ART_W = 1600, ART_H = 800, GUTTER = 96;
+
+/* offscreen surface holding the drawing */
+const art = document.createElement("canvas");
+art.width = ART_W; art.height = ART_H;
+const ax = art.getContext("2d");
+ax.lineCap = "round"; ax.lineJoin = "round";
+
+const board = document.getElementById("board");
+const bx = board.getContext("2d");
+
+let cols = 64, rows = 48, lowMidi = 36;
+let notes = [], dirty = true, undoStack = [];
+let sheet = { x:GUTTER, y:0, w:800, h:400 };
+
+const inScale = m => SCALES[S.scale].includes(((m - S.root) % 12 + 12) % 12);
+function snapMidi(m){
+  if (!S.snap || inScale(m)) return m;
+  for (let d=1; d<=6; d++){
+    if (inScale(m-d)) return m-d;
+    if (inScale(m+d)) return m+d;
+  }
+  return m;
+}
+function recalc(){
+  cols = S.bars * 4 * S.stepsPerBeat;
+  rows = S.octs * 12;
+  lowMidi = 12 + S.lowOct * 12;
+  dirty = true;
+}
+
+/* ============================================================
+   layout
+   ============================================================ */
+function fit(){
+  const rect = board.parentElement.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  board.width = Math.round(rect.width * dpr);
+  board.height = Math.round(rect.height * dpr);
+  bx.setTransform(dpr,0,0,dpr,0,0);
+  sheet = { x:GUTTER, y:0, w:Math.max(50, rect.width - GUTTER), h:rect.height };
+  draw();
+}
+
+/* ============================================================
+   drawing
+   ============================================================ */
+let painting = false, erasing = false, last = null, cursor = null, cursorIn = false;
+
+function toArt(e){
+  const r = board.getBoundingClientRect();
+  return {
+    x: (e.clientX - r.left - sheet.x) / sheet.w * ART_W,
+    y: (e.clientY - r.top  - sheet.y) / sheet.h * ART_H
+  };
+}
+function onSheet(e){
+  const r = board.getBoundingClientRect();
+  return (e.clientX - r.left) >= sheet.x;
+}
+function pushUndo(){
+  const snap = document.createElement("canvas");
+  snap.width = ART_W; snap.height = ART_H;
+  snap.getContext("2d").drawImage(art, 0, 0);
+  undoStack.push(snap);
+  if (undoStack.length > 10) undoStack.shift();
+}
+function stroke(a, b, erase){
+  ax.save();
+  ax.globalCompositeOperation = erase ? "destination-out" : "source-over";
+  ax.strokeStyle = "#2c6058";
+  ax.lineWidth = S.nib * (erase ? 2.2 : 1);
+  ax.beginPath(); ax.moveTo(a.x, a.y); ax.lineTo(b.x, b.y); ax.stroke();
+  ax.restore();
+}
+
+board.addEventListener("pointerdown", e => {
+  if (!onSheet(e)) return;
+  board.setPointerCapture(e.pointerId);
+  pushUndo();
+  painting = true;
+  erasing = (S.tool === "eraser") || e.button === 2;
+  last = toArt(e);
+  stroke(last, { x:last.x + 0.01, y:last.y }, erasing);
+  dirty = true; draw();
+});
+board.addEventListener("pointermove", e => {
+  const r = board.getBoundingClientRect();
+  cursor = { x:e.clientX - r.left, y:e.clientY - r.top };
+  cursorIn = onSheet(e);
+  if (painting){
+    const p = toArt(e);
+    stroke(last, p, erasing);
+    last = p;
+    dirty = true;
+  }
+  draw();
+});
+board.addEventListener("pointerleave", () => { cursorIn = false; draw(); });
+for (const ev of ["pointerup","pointercancel"]) board.addEventListener(ev, () => {
+  if (!painting) return;
+  painting = false;
+  analyse();
+});
+board.addEventListener("contextmenu", e => e.preventDefault());
+
+/* ============================================================
+   painting the board
+   ============================================================ */
+function draw(){
+  const W = sheet.x + sheet.w, H = sheet.h;
+  bx.clearRect(0, 0, W, H);
+  bx.fillStyle = "#ede7da"; bx.fillRect(0, 0, W, H);
+  bx.fillStyle = "#fcfcfa"; bx.fillRect(sheet.x, sheet.y, sheet.w, sheet.h);
+
+  const rowH = sheet.h / rows;
+  const labelAll = rowH >= 13;
+
+  for (let r = 0; r < rows; r++){
+    const midi = lowMidi + (rows - 1 - r);
+    const deg = ((midi - S.root) % 12 + 12) % 12;
+    const ok = inScale(midi), isRoot = ok && deg === 0;
+    const y = sheet.y + r * rowH;
+
+    if (S.guides && ok){
+      bx.fillStyle = isRoot ? "#d3e3df" : "#e7f0ed";
+      bx.fillRect(sheet.x, y, sheet.w, rowH);
+    }
+    if (!(labelAll || midi % 12 === 0)) continue;
+
+    const name = NOTE_NAMES[midi % 12] + (Math.floor(midi/12) - 1);
+    if (isRoot){
+      bx.fillStyle = "#2c6058"; bx.fillRect(1, y + .5, GUTTER - 2, rowH - 1);
+      bx.fillStyle = "#ede7da";
+    } else {
+      if (ok){ bx.fillStyle = "#e7f0ed"; bx.fillRect(1, y + .5, GUTTER - 2, rowH - 1); }
+      bx.fillStyle = ok ? "#2c6058" : "rgba(125,156,150,.85)";
+    }
+    bx.font = `${ok ? 500 : 400} ${Math.min(12, Math.max(7, rowH - 3))}px "DM Mono", monospace`;
+    bx.textBaseline = "middle";
+    bx.fillText(name, 10, y + rowH/2);
+  }
+
+  if (S.guides){
+    bx.lineWidth = 1;
+    bx.strokeStyle = "#d2ded9";
+    for (let r = 0; r <= rows; r++){
+      const y = Math.round(sheet.y + r*rowH) + .5;
+      bx.beginPath(); bx.moveTo(sheet.x, y); bx.lineTo(sheet.x + sheet.w, y); bx.stroke();
+    }
+    const stepW = sheet.w / cols;
+    for (let s = 0; s <= cols; s++){
+      const bar = s % (S.stepsPerBeat*4) === 0, beat = s % S.stepsPerBeat === 0;
+      if (!beat && stepW < 5) continue;
+      bx.strokeStyle = bar ? "#9fbab4" : beat ? "#c3d2cd" : "rgba(210,222,217,.6)";
+      bx.lineWidth = bar ? 1.4 : 1;
+      const x = Math.round(sheet.x + s*stepW) + .5;
+      bx.beginPath(); bx.moveTo(x, sheet.y); bx.lineTo(x, sheet.y + sheet.h); bx.stroke();
+    }
+  }
+
+  bx.drawImage(art, sheet.x, sheet.y, sheet.w, sheet.h);
+
+  if (playPos >= 0){
+    const x = sheet.x + playPos / cols * sheet.w;
+    bx.fillStyle = "rgba(180,89,60,.10)";
+    bx.fillRect(sheet.x, sheet.y, x - sheet.x, sheet.h);
+    bx.fillStyle = "#b4593c";
+    bx.fillRect(x - 1.5, sheet.y, 3, sheet.h);
+  }
+
+  // corner label
+  const label = `${NOTE_NAMES[S.root]} ${S.scale.toUpperCase()}  |  SNAP ${S.snap ? "ON" : "OFF"}`;
+  bx.font = '11px "DM Mono", monospace';
+  const w = Math.max(170, bx.measureText(label).width + 26);
+  bx.fillStyle = "rgba(252,252,250,.88)";
+  bx.fillRect(sheet.x + sheet.w - w - 6, sheet.y + 6, w, 22);
+  bx.strokeStyle = "#7d9c96"; bx.lineWidth = 1;
+  bx.strokeRect(sheet.x + sheet.w - w - 6.5, sheet.y + 6.5, w, 22);
+  bx.fillStyle = "#2c6058"; bx.textBaseline = "middle";
+  bx.fillText(label, sheet.x + sheet.w - w + 7, sheet.y + 17);
+
+  if (cursorIn && cursor){
+    const scale = sheet.w / ART_W;
+    const r = Math.max(2.5, S.nib * (S.tool === "eraser" ? 2.2 : 1) / 2 * scale);
+    bx.beginPath(); bx.arc(cursor.x, cursor.y, r, 0, Math.PI*2);
+    bx.strokeStyle = S.tool === "eraser" ? "#b4593c" : "#2c6058";
+    bx.lineWidth = 1.2; bx.stroke();
+  }
+
+  bx.strokeStyle = "#2c6058"; bx.lineWidth = 1;
+  bx.beginPath(); bx.moveTo(GUTTER + .5, 0); bx.lineTo(GUTTER + .5, sheet.h); bx.stroke();
+}
+
+/* ============================================================
+   reading the picture
+   ============================================================ */
+const ana = document.createElement("canvas");
+const anx = ana.getContext("2d", { willReadFrequently:true });
+const tmp = document.createElement("canvas");
+const tmx = tmp.getContext("2d");
+
+function downsample(){
+  let sw = ART_W, sh = ART_H, src = art;
+  while (sw > cols*2 && sh > rows*2){
+    const nw = Math.max(cols, sw >> 1), nh = Math.max(rows, sh >> 1);
+    tmp.width = nw; tmp.height = nh;
+    tmx.clearRect(0,0,nw,nh);
+    tmx.imageSmoothingEnabled = true;
+    tmx.drawImage(src, 0,0,sw,sh, 0,0,nw,nh);
+    const keep = document.createElement("canvas");
+    keep.width = nw; keep.height = nh;
+    keep.getContext("2d").drawImage(tmp, 0, 0);
+    src = keep; sw = nw; sh = nh;
+  }
+  ana.width = cols; ana.height = rows;
+  anx.clearRect(0,0,cols,rows);
+  anx.imageSmoothingEnabled = true;
+  anx.drawImage(src, 0,0,sw,sh, 0,0,cols,rows);
+  return anx.getImageData(0,0,cols,rows).data;
+}
+
+function analyse(){
+  const data = downsample();
+  const ink = new Map();
+  for (let r = 0; r < rows; r++){
+    for (let c = 0; c < cols; c++){
+      const a = data[(r*cols + c)*4 + 3] / 255;
+      if (a < 0.09) continue;
+      const midi = snapMidi(lowMidi + (rows - 1 - r));
+      if (!ink.has(midi)) ink.set(midi, new Float32Array(cols));
+      const row = ink.get(midi);
+      row[c] = Math.max(row[c], a);
+    }
+  }
+  notes = [];
+  for (const [midi, row] of ink){
+    let c = 0;
+    while (c < cols){
+      if (row[c] <= 0){ c++; continue; }
+      const start = c; let peak = 0;
+      while (c < cols && row[c] > 0){ peak = Math.max(peak, row[c]); c++; }
+      notes.push({ midi, start, len:c - start,
+                   vel: Math.max(28, Math.min(127, Math.round(38 + peak*95))) });
+    }
+  }
+  notes.sort((a,b) => a.start - b.start);
+  dirty = false;
+  return notes;
+}
+const fresh = () => (dirty ? analyse() : notes);
+
+/* ============================================================
+   audio + MIDI out
+   ============================================================ */
+let ac = null, master = null, midiAccess = null, midiPort = null;
+function ensureAudio(){
+  if (ac) return;
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+  const comp = ac.createDynamicsCompressor();
+  comp.threshold.value = -14; comp.ratio.value = 6;
+  master = ac.createGain(); master.gain.value = .5;
+  master.connect(comp); comp.connect(ac.destination);
+}
+const hz = m => 440 * Math.pow(2, (m-69)/12);
+
+function playVoice(midi, t, dur, gain){
+  const osc = ac.createOscillator(), g = ac.createGain(), lp = ac.createBiquadFilter();
+  osc.type = S.wave; osc.frequency.value = hz(midi);
+  lp.type = "lowpass"; lp.frequency.setValueAtTime(Math.min(9000, hz(midi)*7), t); lp.Q.value = .7;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(gain, t + .006);
+  g.gain.setTargetAtTime(gain*.62, t + .012, .12);
+  g.gain.setTargetAtTime(.0001, t + dur, .04);
+  osc.connect(lp); lp.connect(g); g.connect(master);
+  osc.start(t); osc.stop(t + dur + .3);
+}
+function sendMidi(bytes, atAudioTime){
+  if (!midiPort) return;
+  const ms = performance.now() + (atAudioTime - ac.currentTime) * 1000;
+  midiPort.send(bytes, ms);
+}
+
+let playing = false, curStep = 0, nextTime = 0, anchors = [], timer = null, raf = null, playPos = -1;
+const stepDur = () => 60 / S.bpm / S.stepsPerBeat;
+
+function scheduler(){
+  const dur = stepDur();
+  while (nextTime < ac.currentTime + .12){
+    const starting = notes.filter(n => n.start === curStep);
+    const share = starting.length ? Math.min(.20, .34/Math.sqrt(starting.length)) : 0;
+    for (const n of starting){
+      const len = n.len * dur * S.gate;
+      if (S.voice) playVoice(n.midi, nextTime, len, share * (n.vel/110));
+      if (S.midiOut){
+        sendMidi([0x90, n.midi, n.vel], nextTime);
+        sendMidi([0x80, n.midi, 64], nextTime + len);
+      }
+    }
+    nextTime += dur; curStep++;
+    if (curStep >= cols){
+      if (S.loop){ curStep = 0; anchors.push(nextTime); if (dirty) analyse(); }
+      else { setTimeout(stop, (nextTime - ac.currentTime + .4)*1000); clearInterval(timer); timer = null; return; }
+    }
+  }
+}
+function frame(){
+  if (!playing) return;
+  const now = ac.currentTime;
+  while (anchors.length > 1 && anchors[1] <= now) anchors.shift();
+  playPos = Math.max(0, Math.min(cols, (now - anchors[0]) / stepDur()));
+  draw();
+  raf = requestAnimationFrame(frame);
+}
+function play(){
+  ensureAudio(); ac.resume(); fresh();
+  playing = true; curStep = 0;
+  nextTime = ac.currentTime + .06;
+  anchors = [nextTime];
+  scheduler();
+  timer = setInterval(scheduler, 25);
+  raf = requestAnimationFrame(frame);
+  btnPlay.textContent = "Stop";
+}
+function stop(){
+  playing = false;
+  if (timer) clearInterval(timer); timer = null;
+  if (raf) cancelAnimationFrame(raf); raf = null;
+  if (midiPort) for (let ch = 0; ch < 1; ch++) midiPort.send([0xB0, 123, 0]);   // all notes off
+  if (master){
+    master.gain.setTargetAtTime(0, ac.currentTime, .02);
+    setTimeout(() => { if (master) master.gain.setTargetAtTime(.5, ac.currentTime, .02); }, 130);
+  }
+  playPos = -1; draw();
+  btnPlay.textContent = "Play";
+}
+
+/* ============================================================
+   MIDI file export
+   ============================================================ */
+const TPQ = 480;
+const vlq = n => { const o = [n & 0x7f]; n >>= 7; while (n > 0){ o.unshift((n & 0x7f)|0x80); n >>= 7; } return o; };
+const str = s => [...s].map(c => c.charCodeAt(0));
+const u32 = n => [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255];
+
+function buildMidi(){
+  const tps = TPQ / S.stepsPerBeat, ev = [];
+  for (const n of notes){
+    const on = Math.round(n.start*tps);
+    const off = Math.max(on+2, Math.round((n.start + n.len*S.gate)*tps));
+    ev.push({ t:on,  o:1, d:[0x90, n.midi, n.vel] });
+    ev.push({ t:off, o:0, d:[0x80, n.midi, 64] });
+  }
+  ev.sort((a,b) => a.t - b.t || a.o - b.o);
+  const trk = [];
+  const name = str(`PLOTTER ${NOTE_NAMES[S.root]} ${S.scale}`);
+  trk.push(0x00,0xFF,0x03,name.length,...name);
+  const upq = Math.round(60000000 / S.bpm);
+  trk.push(0x00,0xFF,0x51,0x03,(upq>>16)&255,(upq>>8)&255,upq&255);
+  trk.push(0x00,0xFF,0x58,0x04,4,2,24,8);
+  let last = 0;
+  for (const e of ev){ trk.push(...vlq(e.t-last), ...e.d); last = e.t; }
+  trk.push(...vlq(Math.max(0, Math.round(cols*tps) - last)), 0xFF,0x2F,0x00);
+  return new Uint8Array([...str("MThd"),...u32(6),0,0,0,1,(TPQ>>8)&255,TPQ&255,
+                         ...str("MTrk"),...u32(trk.length),...trk]);
+}
+function download(blob, name){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+function flash(btn, msg){ const old = btn.textContent; btn.textContent = msg; setTimeout(() => btn.textContent = old, 1200); }
+
+/* ============================================================
+   controls
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const btnPlay = $("btnPlay");
+
+NOTE_NAMES.forEach((n,i) => $("key").add(new Option(n, i)));
+Object.keys(SCALES).forEach(n => { const o = new Option(n, n); if (n === S.scale) o.selected = true; $("scale").add(o); });
+for (let o = 0; o <= 5; o++){ const el = new Option("C"+o, o); if (o === S.lowOct) el.selected = true; $("lowOct").add(el); }
+
+const press = (b, on) => b.setAttribute("aria-pressed", on ? "true" : "false");
+function setTool(t){
+  S.tool = t;
+  press($("btnPencil"), t === "pencil");
+  press($("btnEraser"), t === "eraser");
+  draw();
+}
+$("btnPencil").onclick = () => setTool("pencil");
+$("btnEraser").onclick = () => setTool("eraser");
+$("nib").oninput = e => {
+  S.nib = +e.target.value;
+  $("nibValue").textContent = String(S.nib).padStart(2, "0");
+  draw();
+};
+$("btnUndo").onclick = () => {
+  if (!undoStack.length) return;
+  const snap = undoStack.pop();
+  ax.clearRect(0,0,ART_W,ART_H);
+  ax.drawImage(snap, 0, 0);
+  dirty = true; analyse(); draw();
+};
+$("btnClear").onclick = () => { pushUndo(); ax.clearRect(0,0,ART_W,ART_H); notes = []; dirty = false; draw(); };
+$("btnGuides").onclick = e => { S.guides = !S.guides; press(e.currentTarget, S.guides); draw(); };
+btnPlay.onclick = () => playing ? stop() : play();
+$("btnLoop").onclick = e => { S.loop = !S.loop; press(e.currentTarget, S.loop); };
+
+$("key").onchange   = e => { S.root = +e.target.value; dirty = true; analyse(); draw(); };
+$("scale").onchange = e => { S.scale = e.target.value; dirty = true; analyse(); draw(); };
+$("snap").onchange  = e => { S.snap = e.target.checked; dirty = true; analyse(); draw(); };
+$("lowOct").onchange = e => { S.lowOct = +e.target.value; recalc(); analyse(); draw(); };
+$("octs").onchange  = e => { S.octs = 2 + e.target.selectedIndex; recalc(); analyse(); draw(); };
+$("bars").onchange  = e => { S.bars = [1,2,4,8][e.target.selectedIndex]; if (playing) stop(); recalc(); analyse(); draw(); };
+$("res").onchange   = e => { S.stepsPerBeat = [1,2,4,8][e.target.selectedIndex]; if (playing) stop(); recalc(); analyse(); draw(); };
+$("bpm").onchange   = e => { S.bpm = Math.max(20, Math.min(300, +e.target.value || 140)); e.target.value = S.bpm; };
+$("wave").onchange  = e => S.wave = e.target.value;
+$("voice").onchange = e => S.voice = e.target.checked;
+
+$("midiOut").onchange = async e => {
+  S.midiOut = e.target.checked;
+  const sel = $("midiPort");
+
+  if (!S.midiOut){ sel.style.display = "none"; return; }
+
+  try {
+    if (!midiAccess) midiAccess = await navigator.requestMIDIAccess();
+    const outs = [...midiAccess.outputs.values()];
+    if (!outs.length){ alert("No MIDI outputs found. On macOS, enable the IAC Driver in Audio MIDI Setup."); e.target.checked = S.midiOut = false; return; }
+    sel.innerHTML = "";
+    outs.forEach((o,i) => sel.add(new Option(o.name, i)));
+    midiPort = outs[0];
+    sel.onchange = ev => midiPort = outs[ev.target.selectedIndex];
+    sel.style.display = "";
+  } catch (err) {
+    alert("Web MIDI unavailable in this browser. Chrome or Edge support it; Safari does not.");
+    e.target.checked = S.midiOut = false;
+  }
+};
+
+$("btnMidi").onclick = () => {
+  fresh();
+  if (!notes.length){ flash($("btnMidi"), "Blank"); return; }
+  download(new Blob([buildMidi()], {type:"audio/midi"}),
+           `plotter_${NOTE_NAMES[S.root].replace("#","s")}-${S.scale.replace(/[^A-Za-z0-9]/g,"")}_${S.bpm}bpm.mid`);
+};
+$("btnPng").onclick = () => {
+  const out = document.createElement("canvas");
+  out.width = ART_W; out.height = ART_H;
+  const c = out.getContext("2d");
+  c.fillStyle = "#fcfcfa"; c.fillRect(0,0,ART_W,ART_H);
+  c.drawImage(art, 0, 0);
+  out.toBlob(b => download(b, "plotter_drawing.png"));
+};
+
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input,select")) return;
+  if (e.key === " "){ e.preventDefault(); playing ? stop() : play(); }
+  else if (e.key === "p") setTool("pencil");
+  else if (e.key === "e") setTool("eraser");
+  else if (e.key === "["){ $("nib").value = S.nib - 2; $("nib").oninput({ target:$("nib") }); }
+  else if (e.key === "]"){ $("nib").value = S.nib + 2; $("nib").oninput({ target:$("nib") }); }
+  else if ((e.metaKey || e.ctrlKey) && e.key === "z"){ e.preventDefault(); $("btnUndo").click(); }
+});
+
+let rt;
+window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(fit, 100); });
+
+recalc();
+fit();
+</script>
+</body>
+</html>

@@ -9,6 +9,14 @@
   // music/device items fall back to a plain icon.
   var PORTFOLIO_ITEMS = [
     {
+      type: "app",
+      artist: "Sungam",
+      title: "Plotter",
+      link: "WebApps/plotter-web.html",
+      image: "Pics/apps/plotter.webp",
+      description: "Draw to melody app with midi export. VST plugin in development."
+    },
+    {
       type: "video",
       artist: "Sungam",
       title: "From Recipes to Puppies to Violence in two scrolls",
@@ -274,210 +282,61 @@
       link: "https://sungam.bandcamp.com/album/city-pops",
       image: "Pics/music/Sungam - City pops.webp"
     },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Shoes",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/shoes.webp",
-      fullImage: "Pics/visual/Muted/shoes.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Togstopp",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/togstopp.webp",
-      fullImage: "Pics/visual/Muted/togstopp.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "606",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/606.webp",
-      fullImage: "Pics/visual/Muted/606.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Ballbar",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/ballbar.webp",
-      fullImage: "Pics/visual/Muted/ballbar.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Blurstreet",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/blurstreet.webp",
-      fullImage: "Pics/visual/Muted/blurstreet.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Blurthoka",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/blurthoka.webp",
-      fullImage: "Pics/visual/Muted/blurthoka.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Frosvogn",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/frosvogn.webp",
-      fullImage: "Pics/visual/Muted/frosvogn.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Kjallarahurd",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/kjallarahurd.webp",
-      fullImage: "Pics/visual/Muted/kjallarahurd.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Nattblokk",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/nattblokk.webp",
-      fullImage: "Pics/visual/Muted/nattblokk.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Paleparade",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/paleparade.webp",
-      fullImage: "Pics/visual/Muted/paleparade.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Rafbox",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/rafbox.webp",
-      fullImage: "Pics/visual/Muted/rafbox.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Rennibraut",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/rennibraut.webp",
-      fullImage: "Pics/visual/Muted/rennibraut.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Skilti",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/skilti.webp",
-      fullImage: "Pics/visual/Muted/skilti.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Thokuhus",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/thokuhus.webp",
-      fullImage: "Pics/visual/Muted/thokuhus.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Trethoka",
-      style: "muted",
-      image: "Pics/visual/Muted/thumbs/trethoka.webp",
-      fullImage: "Pics/visual/Muted/trethoka.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Rafboks",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/rafboks.webp",
-      fullImage: "Pics/visual/Pronounced/rafboks.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Ammagangur",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/ammagangur.webp",
-      fullImage: "Pics/visual/Pronounced/ammagangur.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Farlig",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/farlig.webp",
-      fullImage: "Pics/visual/Pronounced/farlig.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Is",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/is.webp",
-      fullImage: "Pics/visual/Pronounced/is.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Nattdog",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/nattdog.webp",
-      fullImage: "Pics/visual/Pronounced/nattdog.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Nattstoler",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/nattstoler.webp",
-      fullImage: "Pics/visual/Pronounced/nattstoler.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Prjonatre",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/prjonatre.webp",
-      fullImage: "Pics/visual/Pronounced/prjonatre.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Rafbox",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/rafbox.webp",
-      fullImage: "Pics/visual/Pronounced/rafbox.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Raudisandur",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/raudisandur.webp",
-      fullImage: "Pics/visual/Pronounced/raudisandur.webp"
-    },
-    {
-      type: "visual",
-      artist: "Sungam",
-      title: "Regnbogahus",
-      style: "pronounced",
-      image: "Pics/visual/Pronounced/thumbs/regnbogahus.webp",
-      fullImage: "Pics/visual/Pronounced/regnbogahus.webp"
-    }
+    { type: "visual", artist: "Sungam", title: "9587", image: "Pics/visual/thumbs/img_9587.webp", fullImage: "Pics/visual/img_9587.webp" },
+    { type: "visual", artist: "Sungam", title: "9606", image: "Pics/visual/thumbs/img_9606.webp", fullImage: "Pics/visual/img_9606.webp" },
+    { type: "visual", artist: "Sungam", title: "9565", image: "Pics/visual/thumbs/img_9565.webp", fullImage: "Pics/visual/img_9565.webp" },
+    { type: "visual", artist: "Sungam", title: "9529", image: "Pics/visual/thumbs/img_9529.webp", fullImage: "Pics/visual/img_9529.webp" },
+    { type: "visual", artist: "Sungam", title: "9516", image: "Pics/visual/thumbs/img_9516.webp", fullImage: "Pics/visual/img_9516.webp" },
+    { type: "visual", artist: "Sungam", title: "9514", image: "Pics/visual/thumbs/img_9514.webp", fullImage: "Pics/visual/img_9514.webp" },
+    { type: "visual", artist: "Sungam", title: "9512", image: "Pics/visual/thumbs/img_9512.webp", fullImage: "Pics/visual/img_9512.webp" },
+    { type: "visual", artist: "Sungam", title: "9476", image: "Pics/visual/thumbs/img_9476.webp", fullImage: "Pics/visual/img_9476.webp" },
+    { type: "visual", artist: "Sungam", title: "9458", image: "Pics/visual/thumbs/img_9458.webp", fullImage: "Pics/visual/img_9458.webp" },
+    { type: "visual", artist: "Sungam", title: "9376", image: "Pics/visual/thumbs/img_9376.webp", fullImage: "Pics/visual/img_9376.webp" },
+    { type: "visual", artist: "Sungam", title: "9367", image: "Pics/visual/thumbs/img_9367.webp", fullImage: "Pics/visual/img_9367.webp" },
+    { type: "visual", artist: "Sungam", title: "9348", image: "Pics/visual/thumbs/img_9348.webp", fullImage: "Pics/visual/img_9348.webp" },
+    { type: "visual", artist: "Sungam", title: "9294", image: "Pics/visual/thumbs/img_9294.webp", fullImage: "Pics/visual/img_9294.webp" },
+    { type: "visual", artist: "Sungam", title: "Shoes",       image: "Pics/visual/thumbs/shoes.webp",       fullImage: "Pics/visual/shoes.webp" },
+    { type: "visual", artist: "Sungam", title: "Togstopp",    image: "Pics/visual/thumbs/togstopp.webp",    fullImage: "Pics/visual/togstopp.webp" },
+    { type: "visual", artist: "Sungam", title: "606",         image: "Pics/visual/thumbs/606.webp",         fullImage: "Pics/visual/606.webp" },
+    { type: "visual", artist: "Sungam", title: "Ballbar",     image: "Pics/visual/thumbs/ballbar.webp",     fullImage: "Pics/visual/ballbar.webp" },
+    { type: "visual", artist: "Sungam", title: "Blurstreet",  image: "Pics/visual/thumbs/blurstreet.webp",  fullImage: "Pics/visual/blurstreet.webp" },
+    { type: "visual", artist: "Sungam", title: "Blurthoka",   image: "Pics/visual/thumbs/blurthoka.webp",   fullImage: "Pics/visual/blurthoka.webp" },
+    { type: "visual", artist: "Sungam", title: "Frosvogn",    image: "Pics/visual/thumbs/frosvogn.webp",    fullImage: "Pics/visual/frosvogn.webp" },
+    { type: "visual", artist: "Sungam", title: "Kjallarahurd",image: "Pics/visual/thumbs/kjallarahurd.webp",fullImage: "Pics/visual/kjallarahurd.webp" },
+    { type: "visual", artist: "Sungam", title: "Nattblokk",   image: "Pics/visual/thumbs/nattblokk.webp",   fullImage: "Pics/visual/nattblokk.webp" },
+    { type: "visual", artist: "Sungam", title: "Paleparade",  image: "Pics/visual/thumbs/paleparade.webp",  fullImage: "Pics/visual/paleparade.webp" },
+    { type: "visual", artist: "Sungam", title: "Rafbox",      image: "Pics/visual/thumbs/rafbox.webp",      fullImage: "Pics/visual/rafbox.webp" },
+    { type: "visual", artist: "Sungam", title: "Rennibraut",  image: "Pics/visual/thumbs/rennibraut.webp",  fullImage: "Pics/visual/rennibraut.webp" },
+    { type: "visual", artist: "Sungam", title: "Skilti",      image: "Pics/visual/thumbs/skilti.webp",      fullImage: "Pics/visual/skilti.webp" },
+    { type: "visual", artist: "Sungam", title: "Thokuhus",    image: "Pics/visual/thumbs/thokuhus.webp",    fullImage: "Pics/visual/thokuhus.webp" },
+    { type: "visual", artist: "Sungam", title: "Trethoka",    image: "Pics/visual/thumbs/trethoka.webp",    fullImage: "Pics/visual/trethoka.webp" },
+    { type: "visual", artist: "Sungam", title: "Rafboks",     image: "Pics/visual/thumbs/rafboks.webp",     fullImage: "Pics/visual/rafboks.webp" },
+    { type: "visual", artist: "Sungam", title: "Ammagangur",  image: "Pics/visual/thumbs/ammagangur.webp",  fullImage: "Pics/visual/ammagangur.webp" },
+    { type: "visual", artist: "Sungam", title: "Farlig",      image: "Pics/visual/thumbs/farlig.webp",      fullImage: "Pics/visual/farlig.webp" },
+    { type: "visual", artist: "Sungam", title: "Is",          image: "Pics/visual/thumbs/is.webp",          fullImage: "Pics/visual/is.webp" },
+    { type: "visual", artist: "Sungam", title: "Nattdog",     image: "Pics/visual/thumbs/nattdog.webp",     fullImage: "Pics/visual/nattdog.webp" },
+    { type: "visual", artist: "Sungam", title: "Nattstoler",  image: "Pics/visual/thumbs/nattstoler.webp",  fullImage: "Pics/visual/nattstoler.webp" },
+    { type: "visual", artist: "Sungam", title: "Prjonatre",   image: "Pics/visual/thumbs/prjonatre.webp",   fullImage: "Pics/visual/prjonatre.webp" },
+    { type: "visual", artist: "Sungam", title: "Rafbox",      image: "Pics/visual/thumbs/rafbox2.webp",     fullImage: "Pics/visual/rafbox2.webp" },
+    { type: "visual", artist: "Sungam", title: "Raudisandur", image: "Pics/visual/thumbs/raudisandur.webp", fullImage: "Pics/visual/raudisandur.webp" },
+    { type: "visual", artist: "Sungam", title: "Regnbogahus", image: "Pics/visual/thumbs/regnbogahus.webp", fullImage: "Pics/visual/regnbogahus.webp" }
   ];
 
-  var TYPE_LABELS = { video: 'Video', music: 'Music', device: 'Device', visual: 'Visual' };
-  var TYPE_ICONS = { video: 'icons/youtube.svg', music: 'icons/bandcamp.svg', device: 'icons/gumroad.svg', visual: 'icons/photo.svg' };
+  // Shuffle visual items once so grayscale and colour photos mix randomly each visit
+  (function () {
+    var vis = PORTFOLIO_ITEMS.filter(function (i) { return i.type === 'visual'; });
+    for (var i = vis.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = vis[i]; vis[i] = vis[j]; vis[j] = t;
+    }
+    var vi = 0;
+    PORTFOLIO_ITEMS = PORTFOLIO_ITEMS.map(function (item) {
+      return item.type === 'visual' ? vis[vi++] : item;
+    });
+  }());
+
+  var TYPE_LABELS = { video: 'Video', music: 'Music', device: 'Device', visual: 'Visual', app: 'App' };
+  var TYPE_ICONS = { video: 'icons/youtube.svg', music: 'icons/bandcamp.svg', device: 'icons/gumroad.svg', visual: 'icons/photo.svg', app: 'icons/gumroad.svg' };
 
   var lightbox = document.getElementById('lightbox');
   var lightboxImg = document.getElementById('lightbox-img');
@@ -618,23 +477,16 @@
     return row;
   }
 
-  var styleFilterPills = document.querySelectorAll('.filter-pill--sub');
-  var styleFiltersContainer = document.getElementById('visual-style-filters');
-  var activeStyle = styleFilterPills.length ? styleFilterPills[0].dataset.style : null;
-
   function render() {
     grid.innerHTML = '';
     var isVisualView = activeType === 'visual';
-    var isDeviceView = activeType === 'device';
+    var isDeviceView = activeType === 'device' || activeType === 'app';
 
-    if (styleFiltersContainer) styleFiltersContainer.hidden = !isVisualView;
     grid.classList.toggle('grid--devices', isDeviceView);
     grid.classList.toggle('grid--visual', isVisualView);
 
     var visible = PORTFOLIO_ITEMS.filter(function (item) {
-      if (item.type !== activeType) return false;
-      if (isVisualView && activeStyle) return item.style === activeStyle;
-      return true;
+      return item.type === activeType;
     });
     visible.forEach(function (item, index) {
       grid.appendChild(isDeviceView ? renderDeviceRow(item) : renderCard(item, index, visible));
@@ -646,16 +498,6 @@
     pill.addEventListener('click', function () {
       activeType = pill.dataset.type;
       filterPills.forEach(function (p) {
-        p.setAttribute('aria-checked', String(p === pill));
-      });
-      render();
-    });
-  });
-
-  styleFilterPills.forEach(function (pill) {
-    pill.addEventListener('click', function () {
-      activeStyle = pill.dataset.style;
-      styleFilterPills.forEach(function (p) {
         p.setAttribute('aria-checked', String(p === pill));
       });
       render();
