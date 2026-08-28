@@ -246,49 +246,66 @@ const SAMPLES = [
    ─────────────────────────────────────────────────────────────────────────── */
 const WORKLET_SRC = `
 class CloudiusProcessor extends AudioWorkletProcessor {
-  constructor () {
+  constructor (options) {
     super();
+    this.ready = false;
     this.p = {
-      pitch: 0.5, position: 0, size: 0.5, density: 0.5, texture: 0.5,
+      position: 0, size: 0.5, pitch: 0.5, density: 0.5, texture: 0.5,
       drywet: 0.5, spread: 0, feedback: 0, reverb: 0,
-      mode: 0, quality: 0, freeze: false, note: 0
+      mode: 0, quality: 0, freeze: false
     };
-    this.head = 0;
-    this.port.onmessage = (e) => {
-      const d = e.data;
+    this.mode = -1; this.quality = -1;
+
+    // The Clouds firmware, compiled to WebAssembly. No imports, so it needs
+    // no environment - and memory growth is off, so these views stay valid.
+    WebAssembly.instantiate(options.processorOptions.wasm).then((r) => {
+      const e = r.instance.exports;
+      e._initialize();
+      e.cloudius_init(sampleRate);
+      this.e = e;
+      this.L = new Float32Array(e.memory.buffer, e.cloudius_buf_l(), 2048);
+      this.R = new Float32Array(e.memory.buffer, e.cloudius_buf_r(), 2048);
+      this.ready = true;
+      this.port.postMessage({
+        ready: true,
+        latency: e.cloudius_latency(),
+        bufferSeconds: e.cloudius_buffer_seconds()
+      });
+    }).catch((err) => this.port.postMessage({ error: String(err) }));
+
+    this.port.onmessage = (ev) => {
+      const d = ev.data;
       if (d.type === 'params') Object.assign(this.p, d.value);
-      else if (d.type === 'trig') this.trig = true;
+      else if (d.type === 'trig' && this.e) this.e.cloudius_trigger();
     };
   }
 
   process (inputs, outputs) {
     const inp = inputs[0], out = outputs[0];
     if (!out || out.length === 0) return true;
-
     const oL = out[0], oR = out[1] || out[0];
     const iL = inp && inp[0] ? inp[0] : null;
     const iR = inp && inp[1] ? inp[1] : iL;
-    const n  = oL.length;
+    const n = oL.length;
 
-    // ── DSP SEAM ───────────────────────────────────────────────────────────
-    // TODO: replace with the WASM build of clouds::GranularProcessor.
-    // Until then the dry signal passes and dry/wet only attenuates, so the
-    // page never pretends to be granulating something it is not.
-    const g = 1.0;
-    for (let i = 0; i < n; i++) {
-      oL[i] = iL ? iL[i] * g : 0;
-      oR[i] = iR ? iR[i] * g : 0;
+    if (!this.ready) {                       // still compiling - stay quiet
+      for (let i = 0; i < n; i++) { oL[i] = iL ? iL[i] : 0; oR[i] = iR ? iR[i] : 0; }
+      return true;
     }
-    // ───────────────────────────────────────────────────────────────────────
 
-    // The recording head keeps moving so the buffer readout is honest about
-    // freeze even while the engine is a stub.
-    if (!this.p.freeze) {
-      const secs = [1.02, 1.86, 4.09, 7.42][this.p.quality] || 1.02;
-      this.head = (this.head + n / (sampleRate * secs)) % 1;
-    }
+    const e = this.e, p = this.p;
+    if (p.mode !== this.mode)       { this.mode = p.mode;       e.cloudius_set_mode(p.mode); }
+    if (p.quality !== this.quality) { this.quality = p.quality; e.cloudius_set_quality(p.quality); }
+
+    e.cloudius_set_params(p.position, p.size, p.pitch, p.density, p.texture,
+                          p.drywet, p.spread, p.feedback, p.reverb, p.freeze ? 1 : 0);
+
+    for (let i = 0; i < n; i++) { this.L[i] = iL ? iL[i] : 0; this.R[i] = iR ? iR[i] : 0; }
+    e.cloudius_process(n);
+    for (let i = 0; i < n; i++) { oL[i] = this.L[i]; oR[i] = this.R[i]; }
+
     if ((currentFrame & 2047) < n) {
-      this.port.postMessage({ head: this.head });
+      this.port.postMessage({ head: e.cloudius_head(), bufferSeconds: e.cloudius_buffer_seconds() });
     }
     return true;
   }
@@ -356,7 +373,7 @@ function readouts () {
   $("qualityCaption").textContent = QUALITY_CAPTION[params.quality];
 
   // Read window: only granular has one this page can state exactly.
-  const secs = [1.02, 1.86, 4.09, 7.42][params.quality];
+  const secs = params.bufferSeconds || [1.02, 1.86, 4.09, 7.42][params.quality];
   const win  = $("bufWin");
   if (params.mode === 0) {
     const w = Math.min(1, grainSizeMs(params.size) / 1000 / secs);
@@ -377,9 +394,16 @@ async function initAudio () {
 
   try {
     const blob = new Blob([WORKLET_SRC], { type: "application/javascript" });
-    await ac.audioWorklet.addModule(URL.createObjectURL(blob));
+    const [, wasm] = await Promise.all([
+      ac.audioWorklet.addModule(URL.createObjectURL(blob)),
+      fetch("cloudius.wasm").then((r) => {
+        if (!r.ok) throw new Error("cloudius.wasm " + r.status);
+        return r.arrayBuffer();
+      })
+    ]);
     node = new AudioWorkletNode(ac, "cloudius", {
-      numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2]
+      numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2],
+      processorOptions: { wasm }
     });
   } catch (err) {
     /* An AudioWorklet module cannot be fetched from a file:// page - the blob
@@ -392,10 +416,20 @@ async function initAudio () {
     b.title = "Serve this page over http:// to load the audio worklet.";
   }
   if (node.port) node.port.onmessage = (e) => {
-    if (typeof e.data.head === "number") {
-      params.head = e.data.head;
-      $("bufHead").style.left = (e.data.head * 100) + "%";
+    const d = e.data;
+    if (d.ready) {
+      const b = $("dspBadge");
+      b.textContent = "DSP: clouds 32 kHz";
+      b.title = "Mutable Instruments Clouds firmware, compiled to WebAssembly";
+      $("srInfo").textContent = Math.round(ac.sampleRate / 100) / 10 + " kHz \u00b7 "
+                              + (d.latency / ac.sampleRate * 1000).toFixed(1) + " ms latency";
     }
+    if (d.error) setStatus("engine failed to start - " + d.error, true);
+    if (typeof d.head === "number") {
+      params.head = d.head;
+      $("bufHead").style.left = (d.head * 100) + "%";
+    }
+    if (typeof d.bufferSeconds === "number") params.bufferSeconds = d.bufferSeconds;
   };
 
   analyser = ac.createAnalyser();
