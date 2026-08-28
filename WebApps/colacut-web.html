@@ -127,6 +127,11 @@
 
   .badge{border:1px solid var(--perform);color:var(--perform);padding:2px 8px;letter-spacing:.1em;text-transform:uppercase}
   .hint{font-size:11px;opacity:.55;padding-top:8px;line-height:1.5}
+  .lim{
+    font-size:9px;letter-spacing:.14em;border:1px solid currentColor;padding:1px 4px;
+    opacity:.18;transition:opacity .08s;
+  }
+  .lim.on{opacity:1;color:var(--perform)}
   .filenote{
     margin:10px 0 0;padding:8px 12px;border:1.5px dashed var(--perform);
     color:var(--perform);font-size:11px;line-height:1.6;
@@ -164,6 +169,7 @@
       <span class="readout" id="srcName" style="opacity:.6">no sample loaded</span>
       <span class="push"></span>
       <span class="meter"><i id="meterFill"></i></span>
+      <span class="lim" id="limLamp" title="output limiter working">LIM</span>
     </div>
   </section>
 
@@ -247,6 +253,15 @@ class ColacutProcessor extends AudioWorkletProcessor {
       route: [1,1,1,1,1,1], depth: [0,0,0,0,0,0], wheel: 0
     };
 
+    // Output limiter. The engine's post-gain can push past 0 dBFS on dense
+    // settings - that is faithful, but a browser has nowhere to put it. Peak
+    // follower with instant attack and a slow release, then a hard safety
+    // clamp for whatever the 2 ms attack lets slip.
+    this.lim = { env: 0, gain: 1, grMin: 1 };
+    this.limAtk = 1 - Math.exp(-1 / (0.002 * sampleRate));
+    this.limRel = 1 - Math.exp(-1 / (0.150 * sampleRate));
+    this.limCeil = 0.92;
+
     WebAssembly.instantiate(options.processorOptions.wasm).then((r) => {
       const e = r.instance.exports;
       e._initialize();
@@ -309,11 +324,25 @@ class ColacutProcessor extends AudioWorkletProcessor {
     e.colacut_process(n);
     for (let i = 0; i < n; i++) { oL[i] = this.L[i]; oR[i] = this.R[i]; }
 
+    // ── output limiter ─────────────────────────────────────────────────────
+    const L = this.lim;
+    for (let i = 0; i < n; i++) {
+      const a = Math.abs(oL[i]) > Math.abs(oR[i]) ? Math.abs(oL[i]) : Math.abs(oR[i]);
+      L.env = a > L.env ? a : L.env + (a - L.env) * this.limRel;
+      const target = L.env > this.limCeil ? this.limCeil / L.env : 1;
+      L.gain += (target - L.gain) * (target < L.gain ? this.limAtk : this.limRel);
+      let l = oL[i] * L.gain, r = oR[i] * L.gain;
+      oL[i] = l < -1 ? -1 : (l > 1 ? 1 : l);
+      oR[i] = r < -1 ? -1 : (r > 1 ? 1 : r);
+      if (L.gain < L.grMin) L.grMin = L.gain;
+    }
+
     if ((currentFrame & 1023) < n) {
       this.port.postMessage({
         envIn: e.colacut_env_in(), envOut: e.colacut_env_out(),
-        gate: e.colacut_in_gate() === 1
+        gate: e.colacut_in_gate() === 1, gr: this.lim.grMin
       });
+      this.lim.grMin = 1;
     }
     return true;
   }
@@ -448,6 +477,8 @@ async function initAudio () {
         $("srInfo").textContent = Math.round(ac.sampleRate / 100) / 10 + " kHz \u00b7 "
                                 + (d.latency / ac.sampleRate * 1000).toFixed(0) + " ms latency";
       }
+      if (typeof d.gr === "number")
+        $("limLamp").classList.toggle("on", d.gr < 0.97);
       if (d.error) setStatus("engine failed to start - " + d.error, true);
       if (typeof d.envIn === "number") { live.envIn = d.envIn; live.envOut = d.envOut; }
       if (d.gate !== undefined) $("lampSlice").classList.toggle("on", d.gate);
