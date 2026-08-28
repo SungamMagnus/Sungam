@@ -75,23 +75,38 @@
   .bank.mod h2{color:var(--mod)}
   .bank.voice h2{color:var(--voice)}
 
-  .ctl{display:grid;grid-template-columns:74px 1fr 62px;align-items:center;gap:10px;padding:5px 0}
+  .ctl{display:grid;grid-template-columns:74px 1fr 62px;align-items:center;gap:12px;padding:3px 0}
   .ctl .name{letter-spacing:.12em;text-transform:uppercase;opacity:.7;font-size:11px}
   .ctl .val{text-align:right;letter-spacing:.06em}
   .perform .val{color:var(--perform)}
   .voice .val{color:var(--voice)}
 
   /* modulation matrix: target | source | depth */
-  .mrow{display:grid;grid-template-columns:64px auto 1fr 46px;align-items:center;gap:8px;padding:4px 0}
+  .mrow{display:grid;grid-template-columns:64px auto 1fr 46px;align-items:center;gap:10px;padding:2px 0}
   .mrow .tgt{letter-spacing:.1em;text-transform:uppercase;opacity:.7;font-size:10px}
   .mrow .dv{text-align:right;font-size:11px;color:var(--depth)}
   .mrow .dv.off{color:var(--ink);opacity:.3}
 
-  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent}
-  input[type=range]::-webkit-slider-runnable-track{height:1.5px;background:var(--ink-soft)}
-  input[type=range]::-moz-range-track{height:1.5px;background:var(--ink-soft)}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:3px;height:18px;background:var(--ink);margin-top:-8px}
-  input[type=range]::-moz-range-thumb{width:3px;height:18px;border:0;border-radius:0;background:var(--ink)}
+  /* The track stays a hairline, but the row is 26px tall and the handle 11px
+     wide - a 3px handle on a 2px row looks right and is miserable to grab.
+     Clicking anywhere on the row jumps the handle there. */
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:26px;
+    background:transparent;cursor:pointer;touch-action:none;margin:0;
+  }
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--ink-soft)}
+  input[type=range]::-moz-range-track{height:2px;background:var(--ink-soft)}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:11px;height:22px;border:0;border-radius:0;
+    background:var(--ink);margin-top:-10px;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:11px;height:22px;border:0;border-radius:0;background:var(--ink);
+  }
+  input[type=range]:hover::-webkit-slider-thumb{box-shadow:0 0 0 3px rgba(0,0,0,.10)}
+  input[type=range]:hover::-moz-range-thumb{box-shadow:0 0 0 3px rgba(0,0,0,.10)}
+  input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 5px rgba(0,0,0,.14)}
+  input[type=range]:active::-moz-range-thumb{box-shadow:0 0 0 5px rgba(0,0,0,.14)}
 
   .meter{width:120px;height:7px;border:1px solid var(--ink-soft);background:rgba(25,28,27,.06)}
   .meter i{display:block;height:100%;width:0;background:var(--voice)}
