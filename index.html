@@ -19,6 +19,12 @@
     <span class="sr-only">sungam</span>
   </a>
 
+  <nav class="tabs" role="tablist" aria-label="Site sections">
+    <button class="tab" id="tab-about" type="button" role="tab" aria-selected="false" aria-controls="panel-about" data-tab-link="about">About</button>
+    <button class="tab" id="tab-inspiration" type="button" role="tab" aria-selected="false" aria-controls="panel-inspiration" data-tab-link="inspiration">Inspiration</button>
+    <a class="tab" href="mailto:magnbir@gmail.com">Contact</a>
+  </nav>
+
   <div class="category-row">
     <button class="category-link" type="button" data-category="music">Music</button>
     <button class="category-link" type="button" data-category="video">Moving</button>
@@ -30,13 +36,6 @@
 <main class="site-main">
 
   <section id="panel-portfolio" class="panel" role="tabpanel" aria-labelledby="tab-portfolio">
-
-    <div class="filters" id="type-filters" role="radiogroup" aria-label="Filter portfolio by type">
-      <button class="filter-pill" type="button" role="radio" data-type="music" aria-checked="true">Music</button>
-      <button class="filter-pill" type="button" role="radio" data-type="video" aria-checked="false">Moving</button>
-      <button class="filter-pill" type="button" role="radio" data-type="visual" aria-checked="false">Still</button>
-      <button class="filter-pill" type="button" role="radio" data-type="software" aria-checked="false">Software</button>
-    </div>
 
 <div class="grid" id="portfolio-grid"></div>
 
