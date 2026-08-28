@@ -578,7 +578,8 @@
   var tabs = document.querySelectorAll('[data-tab-link]');
   var panels = {
     portfolio: document.getElementById('panel-portfolio'),
-    about: document.getElementById('panel-about')
+    about: document.getElementById('panel-about'),
+    inspiration: document.getElementById('panel-inspiration')
   };
 
   function activateTab(name) {
