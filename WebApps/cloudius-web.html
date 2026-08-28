@@ -239,9 +239,8 @@
    Anything the browser can decode works (mp3, wav, ogg, m4a, flac).
    ─────────────────────────────────────────────────────────────────────────── */
 const SAMPLES = [
-  // { name: "Rhodes",  file: "samples/rhodes.mp3" },
-  // { name: "Voice",   file: "samples/voice.wav"  },
-  // { name: "Strings", file: "samples/strings.mp3" },
+  { name: "Piano", file: "samples/piano.wav" },
+  { name: "Beat",  file: "samples/beat.wav"  },
 ];
 
 /* ───────────────────────────────────────────────────────────────────────────
@@ -512,15 +511,15 @@ async function loadArrayBuffer (arr, name) {
   }
   setStatus(name + " \u00b7 " + buffer.duration.toFixed(1) + "s", false);
   $("btnPlay").disabled = false;
-  if (playing) play();          // swap the sample without stopping the loop
+  await play();                 // loading a source starts it
 }
 
 /* ── Sample buttons ────────────────────────────────────────────────────── */
 function buildSampleRow () {
   const row = $("sampleRow");
   if (!SAMPLES.length) {
-    row.innerHTML = '<span style="opacity:.5">no bundled samples yet — load a file, '
-                  + 'or add entries to <code>SAMPLES</code> at the top of this file</span>';
+    row.innerHTML = '<span style="opacity:.5">no bundled samples — load a file, or add '
+                  + 'entries to <code>SAMPLES</code> at the top of this file</span>';
     return;
   }
   SAMPLES.forEach((s) => {
