@@ -418,7 +418,7 @@
   var grid = document.getElementById('portfolio-grid');
   var emptyState = document.getElementById('portfolio-empty');
   var filterPills = document.querySelectorAll('#type-filters > .filter-pill');
-  var activeType = filterPills[0].dataset.type;
+  var activeType = 'music';
 
   // Filenames can contain spaces / colons / a literal backslash (macOS
   // substitutes ":" for "/" in filenames). Encode each path segment so the
