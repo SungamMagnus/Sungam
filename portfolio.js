@@ -67,26 +67,10 @@
     {
       type: "device",
       artist: "Sungam",
-      title: "Wordplay",
-      link: "https://sungam.gumroad.com/l/qrgnn",
-      image: "Pics/devices/Wordplay.webp",
-      description: "A creative text-based MaxforLive sequencer — type a word or phrase and its letters become notes, with forward, backward, and ping-pong playback plus scale-aware sequencing."
-    },
-    {
-      type: "device",
-      artist: "Sungam",
-      title: "if/maybe",
-      link: "https://sungam.gumroad.com/l/xilyb",
-      image: "Pics/devices/If:maybe.webp",
-      description: "A two-channel MaxforLive probability randomizer that maps to any control. Set a custom range for each channel, then dial in the odds between them for controlled chaos."
-    },
-    {
-      type: "device",
-      artist: "Sungam",
-      title: "PH-830",
-      link: "https://sungam.gumroad.com/l/nqooz",
-      image: "Pics/devices/PH-830.webp",
-      description: "A MaxforLive emulation of the rare Roland PH-830 analog phase shifter, with added input drive, resonance boost, and L/R link controls on top of the original's quirky character."
+      title: "Flexus",
+      link: "https://sungam.gumroad.com/l/kbnmkx",
+      image: "Pics/devices/Flexus.webp",
+      description: "A strange reverb/delay hybrid where the delay, reverb size, feedback and decay controls are stacked upon each other. This creates interesting blends between the two and allows for lovely textures. Loosely based on and inspired by the Make Noise Plexiphon."
     },
     {
       type: "device",
@@ -99,10 +83,26 @@
     {
       type: "device",
       artist: "Sungam",
-      title: "Flexus",
-      link: "https://sungam.gumroad.com/l/kbnmkx",
-      image: "Pics/devices/Flexus.webp",
-      description: "A strange reverb/delay hybrid where the delay, reverb size, feedback and decay controls are stacked upon each other. This creates interesting blends between the two and allows for lovely textures. Loosely based on and inspired by the Make Noise Plexiphon."
+      title: "PH-830",
+      link: "https://sungam.gumroad.com/l/nqooz",
+      image: "Pics/devices/PH-830.webp",
+      description: "A MaxforLive emulation of the rare Roland PH-830 analog phase shifter, with added input drive, resonance boost, and L/R link controls on top of the original's quirky character."
+    },
+    {
+      type: "device",
+      artist: "Sungam",
+      title: "if/maybe",
+      link: "https://sungam.gumroad.com/l/xilyb",
+      image: "Pics/devices/If:maybe.webp",
+      description: "A two-channel MaxforLive probability randomizer that maps to any control. Set a custom range for each channel, then dial in the odds between them for controlled chaos."
+    },
+    {
+      type: "device",
+      artist: "Sungam",
+      title: "Wordplay",
+      link: "https://sungam.gumroad.com/l/qrgnn",
+      image: "Pics/devices/Wordplay.webp",
+      description: "A creative text-based MaxforLive sequencer — type a word or phrase and its letters become notes, with forward, backward, and ping-pong playback plus scale-aware sequencing."
     },
     {
       type: "music",
