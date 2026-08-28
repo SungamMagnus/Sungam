@@ -15,13 +15,12 @@
 
 <header class="site-header">
   <div class="header-row">
-    <a class="brand" href="#portfolio" data-tab-link="portfolio">
+    <a class="brand" href="#hero" data-tab-link="hero">
       <canvas id="logo-canvas" aria-hidden="true"></canvas>
       <span class="sr-only">sungam</span>
     </a>
 
     <nav class="tabs" role="tablist" aria-label="Site sections">
-      <button class="tab" id="tab-portfolio" type="button" role="tab" aria-selected="true" aria-controls="panel-portfolio" data-tab-link="portfolio">Portfolio</button>
       <button class="tab" id="tab-about" type="button" role="tab" aria-selected="false" aria-controls="panel-about" data-tab-link="about">About</button>
       <button class="tab" id="tab-inspiration" type="button" role="tab" aria-selected="false" aria-controls="panel-inspiration" data-tab-link="inspiration">Inspiration</button>
       <a class="tab" href="mailto:magnbir@gmail.com">Contact</a>
@@ -38,9 +37,19 @@
   </div>
 </header>
 
-<main class="site-main">
+<main class="site-main site-main--hero">
 
-  <section id="panel-portfolio" class="panel" role="tabpanel" aria-labelledby="tab-portfolio">
+  <section id="panel-hero" class="panel hero-panel" role="tabpanel">
+    <canvas id="hero-canvas" aria-label="sungam"></canvas>
+    <nav class="hero-nav" aria-label="Portfolio sections">
+      <button class="hero-nav-btn" type="button" data-hero-filter="music">Music</button>
+      <button class="hero-nav-btn" type="button" data-hero-filter="video">Moving</button>
+      <button class="hero-nav-btn" type="button" data-hero-filter="visual">Still</button>
+      <button class="hero-nav-btn" type="button" data-hero-filter="software">Software</button>
+    </nav>
+  </section>
+
+  <section id="panel-portfolio" class="panel" role="tabpanel" aria-labelledby="tab-portfolio" hidden>
 
     <div class="filters" id="type-filters" role="radiogroup" aria-label="Filter portfolio by type">
       <button class="filter-pill" type="button" role="radio" data-type="music" aria-checked="true">Music</button>
@@ -49,7 +58,7 @@
       <button class="filter-pill" type="button" role="radio" data-type="software" aria-checked="false">Software</button>
     </div>
 
-<div class="grid" id="portfolio-grid"></div>
+    <div class="grid" id="portfolio-grid"></div>
 
     <p class="empty-state" id="portfolio-empty" hidden>Nothing to show — toggle a filter above.</p>
 
@@ -302,6 +311,7 @@
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 <script src="logo-shader.js"></script>
+<script src="hero-shader.js"></script>
 <script src="portfolio.js"></script>
 
 </body>
