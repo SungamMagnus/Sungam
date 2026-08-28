@@ -101,6 +101,11 @@
 
   .badge{border:1px solid var(--engine);color:var(--engine);padding:2px 8px;letter-spacing:.1em;text-transform:uppercase}
   .hint{font-size:11px;opacity:.55;padding-top:8px;line-height:1.5}
+  .filenote{
+    margin:10px 0 0;padding:8px 12px;border:1.5px dashed var(--blend);
+    color:var(--blend);font-size:11px;line-height:1.6;
+  }
+  .filenote code{background:rgba(0,0,0,.06);padding:1px 4px}
 </style>
 </head>
 <body>
@@ -115,6 +120,12 @@
       <a href="https://github.com/SungamMagnus/cloudius" target="_blank" rel="noopener">source ↗</a>
     </span>
   </header>
+
+  <div class="filenote" id="fileNote" hidden>
+    Opened straight from disk. Browsers block the audio engine and the bundled
+    samples on <code>file://</code>, so nothing will load. Serve the folder
+    over http — <code>python3 -m http.server</code> — or use the hosted copy.
+  </div>
 
   <!-- ── Source ─────────────────────────────────────────────────────────── -->
   <section>
@@ -349,13 +360,23 @@ async function initAudio () {
   if (ac) return;
   ac = new (window.AudioContext || window.webkitAudioContext)();
 
-  const blob = new Blob([WORKLET_SRC], { type: "application/javascript" });
-  await ac.audioWorklet.addModule(URL.createObjectURL(blob));
-
-  node = new AudioWorkletNode(ac, "cloudius", {
-    numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2]
-  });
-  node.port.onmessage = (e) => {
+  try {
+    const blob = new Blob([WORKLET_SRC], { type: "application/javascript" });
+    await ac.audioWorklet.addModule(URL.createObjectURL(blob));
+    node = new AudioWorkletNode(ac, "cloudius", {
+      numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2]
+    });
+  } catch (err) {
+    /* An AudioWorklet module cannot be fetched from a file:// page - the blob
+       URL has a null origin. The DSP is a pass-through stub either way, so
+       drop in a plain gain node: transport, loop and meters keep working, and
+       the badge stops claiming an engine that is not there. */
+    node = ac.createGain();
+    const b = $("dspBadge");
+    b.textContent = "DSP: unavailable";
+    b.title = "Serve this page over http:// to load the audio worklet.";
+  }
+  if (node.port) node.port.onmessage = (e) => {
     if (typeof e.data.head === "number") {
       params.head = e.data.head;
       $("bufHead").style.left = (e.data.head * 100) + "%";
@@ -376,7 +397,7 @@ async function initAudio () {
 }
 
 function pushParams () {
-  if (node) node.port.postMessage({ type: "params", value: params });
+  if (node && node.port) node.port.postMessage({ type: "params", value: params });
 }
 
 function meterLoop () {
@@ -416,11 +437,22 @@ async function play () {
   $("btnPlay").classList.remove("primary");
 }
 
+function setStatus (msg, isError) {
+  const el = $("srcName");
+  el.textContent = msg;
+  el.style.opacity = 1;
+  el.style.color = isError ? "var(--blend)" : "";
+}
+
 async function loadArrayBuffer (arr, name) {
   await initAudio();
-  buffer = await ac.decodeAudioData(arr);
-  $("srcName").textContent = name + " · " + buffer.duration.toFixed(1) + "s";
-  $("srcName").style.opacity = 1;
+  try {
+    buffer = await ac.decodeAudioData(arr);
+  } catch (err) {
+    throw new Error("could not decode " + name + " - the browser does not "
+                  + "support this format, or the file is damaged");
+  }
+  setStatus(name + " \u00b7 " + buffer.duration.toFixed(1) + "s", false);
   $("btnPlay").disabled = false;
   if (playing) play();          // swap the sample without stopping the loop
 }
@@ -446,8 +478,7 @@ function buildSampleRow () {
         if (!r.ok) throw new Error(r.status + " " + r.statusText);
         await loadArrayBuffer(await r.arrayBuffer(), s.name);
       } catch (err) {
-        $("srcName").textContent = "could not load " + s.file + " — " + err.message;
-        $("srcName").style.opacity = 1;
+        setStatus("could not load " + s.file + " - " + err.message, true);
       } finally {
         b.disabled = false;
       }
@@ -487,7 +518,7 @@ $("btnFreeze").onclick = (e) => {
   pushParams();
 };
 
-$("btnTrig").onclick = () => { if (node) node.port.postMessage({ type: "trig" }); };
+$("btnTrig").onclick = () => { if (node && node.port) node.port.postMessage({ type: "trig" }); };
 
 $("btnLoop").onclick = (e) => {
   looping = !looping;
@@ -502,8 +533,14 @@ $("fileIn").addEventListener("change", async (e) => {
   if (!f) return;
   document.querySelectorAll("#sampleRow button")
           .forEach((c) => c.setAttribute("aria-pressed", "false"));
-  await loadArrayBuffer(await f.arrayBuffer(), f.name);
+  try {
+    await loadArrayBuffer(await f.arrayBuffer(), f.name);
+  } catch (err) {
+    setStatus(String(err.message || err), true);
+  }
 });
+
+if (location.protocol === "file:") $("fileNote").hidden = false;
 
 buildSampleRow();
 readouts();
