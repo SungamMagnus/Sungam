@@ -11,14 +11,6 @@
     {
       type: "app",
       artist: "Sungam",
-      title: "Plotter",
-      link: "WebApps/plotter-web.html",
-      image: "Pics/apps/plotter.webp",
-      description: "Draw to melody app with midi export. VST plugin in development."
-    },
-    {
-      type: "app",
-      artist: "Sungam",
       title: "Cloudius",
       link: "WebApps/cloudius-web.html",
       image: "Pics/apps/cloudius.webp",
@@ -33,6 +25,14 @@
       image: "Pics/apps/colacut.webp",
       description: "Keyframe time stretcher and transient auto-slicer with dynamic modulation routing and MIDI pitch tracking.",
       releaseUrl: "https://github.com/SungamMagnus/colacut/releases/tag/v0.4.0"
+    },
+    {
+      type: "app",
+      artist: "Sungam",
+      title: "Plotter",
+      link: "WebApps/plotter-web.html",
+      image: "Pics/apps/plotter.webp",
+      description: "Draw to melody app with midi export. VST plugin in development."
     },
     {
       type: "video",

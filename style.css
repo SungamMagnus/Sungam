@@ -248,6 +248,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .device-row {
@@ -270,15 +271,19 @@ body {
 .device-release-link {
   align-self: flex-start;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   text-decoration: none;
-  letter-spacing: 0.03em;
-  padding: 0.15rem 0;
-  transition: color 0.15s ease;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.25rem 0.6rem;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .device-release-link:hover {
   color: var(--fg);
+  border-color: var(--fg);
 }
 
 .device-photo {
