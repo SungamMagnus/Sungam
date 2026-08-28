@@ -94,15 +94,23 @@
     -webkit-appearance:none;appearance:none;width:100%;height:26px;
     background:transparent;cursor:pointer;touch-action:none;margin:0;
   }
-  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--ink-soft)}
-  input[type=range]::-moz-range-track{height:2px;background:var(--ink-soft)}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;border-radius:1px;background:var(--ink-soft)}
+  input[type=range]::-moz-range-track{height:2px;border-radius:1px;background:var(--ink-soft)}
   input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance:none;width:11px;height:22px;border:0;border-radius:0;
+    -webkit-appearance:none;width:11px;height:22px;border:0;border-radius:2.5px;
     background:var(--ink);margin-top:-10px;
   }
   input[type=range]::-moz-range-thumb{
-    width:11px;height:22px;border:0;border-radius:0;background:var(--ink);
+    width:11px;height:22px;border:0;border-radius:2.5px;background:var(--ink);
   }
+
+  /* Each bank's handle carries that section's colour. */
+  .bank.perform input[type=range]::-webkit-slider-thumb{background:var(--perform)}
+  .bank.perform input[type=range]::-moz-range-thumb{background:var(--perform)}
+  .bank.mod input[type=range]::-webkit-slider-thumb{background:var(--depth)}
+  .bank.mod input[type=range]::-moz-range-thumb{background:var(--depth)}
+  .bank.voice input[type=range]::-webkit-slider-thumb{background:var(--voice)}
+  .bank.voice input[type=range]::-moz-range-thumb{background:var(--voice)}
   input[type=range]:hover::-webkit-slider-thumb{box-shadow:0 0 0 3px rgba(0,0,0,.10)}
   input[type=range]:hover::-moz-range-thumb{box-shadow:0 0 0 3px rgba(0,0,0,.10)}
   input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 5px rgba(0,0,0,.14)}
@@ -129,7 +137,7 @@
     <h1>COLACUT</h1>
     <p class="tagline">keyframe time stretcher / transient auto-slicer</p>
     <span class="meta">
-      <span class="badge" id="dspBadge">DSP: stub</span>
+      <span class="badge" id="dspBadge">DSP: idle</span>
       <span id="srInfo">—</span>
       <a href="https://github.com/SungamMagnus/colacut" target="_blank" rel="noopener">source ↗</a>
     </span>
@@ -442,13 +450,13 @@ async function initAudio () {
     };
   } catch (err) {
     /* An AudioWorklet module cannot be fetched from a file:// page - the blob
-       URL has a null origin. The DSP is a pass-through stub either way, so
-       drop in a plain gain node: transport, loop and meters keep working, and
-       the badge stops claiming an engine that is not there. */
+       URL has a null origin - and without it the engine cannot run at all.
+       Drop in a plain gain node so transport, loop and meters still work, and
+       say plainly that the audio is passing through untouched. */
     node = ac.createGain();
     const b = $("dspBadge");
-    b.textContent = "DSP: unavailable";
-    b.title = "Serve this page over http:// to load the audio worklet.";
+    b.textContent = "DSP: bypassed";
+    b.title = "Audio is passing through untouched - serve this page over http:// to run the engine.";
   }
 
   analyser = ac.createAnalyser();
