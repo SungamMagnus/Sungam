@@ -41,40 +41,36 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 1.4rem 1rem 0;
+  padding: 1rem 2rem;
   background: var(--bg);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 0.9rem;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 .brand #logo-canvas {
   display: block;
-  width: 500px;
-  height: 100px;
-}
-
-.nav-row {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 0.6rem 0 0.8rem;
-  border-top: 1px solid var(--border);
-}
-
-.nav-center {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  flex: 1;
-  justify-content: center;
+  width: 280px;
+  height: 56px;
 }
 
 .tabs {
@@ -89,7 +85,7 @@ body {
 
 .category-row {
   display: flex;
-  gap: 2rem;
+  gap: 1.6rem;
   align-items: center;
 }
 
