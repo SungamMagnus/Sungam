@@ -244,6 +244,12 @@ body {
   margin: 3rem 0;
 }
 
+.device-row-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .device-row {
   display: flex;
   gap: 1.5rem;
@@ -259,6 +265,20 @@ body {
 
 .device-row:hover {
   border-color: var(--fg);
+}
+
+.device-release-link {
+  align-self: flex-start;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0;
+  transition: color 0.15s ease;
+}
+
+.device-release-link:hover {
+  color: var(--fg);
 }
 
 .device-photo {

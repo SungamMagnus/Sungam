@@ -11,24 +11,28 @@
     {
       type: "app",
       artist: "Sungam",
+      title: "Plotter",
+      link: "WebApps/plotter-web.html",
+      image: "Pics/apps/plotter.webp",
+      description: "Draw to melody app with midi export. VST plugin in development."
+    },
+    {
+      type: "app",
+      artist: "Sungam",
       title: "Cloudius",
       link: "WebApps/cloudius-web.html",
-      description: "Granular texture processor in the browser. VST3/AU plug-in available."
+      image: "Pics/apps/cloudius.webp",
+      description: "Granular texture processor — after Clouds. Four independent blend controls with granular, stretch, delay and spectral modes.",
+      releaseUrl: "https://github.com/SungamMagnus/cloudius/releases/tag/v0.2.0"
     },
     {
       type: "app",
       artist: "Sungam",
       title: "Colacut",
       link: "WebApps/colacut-web.html",
-      description: "Keyframe time stretcher and transient auto-slicer. VST3/AU plug-in available."
-    },
-    {
-      type: "app",
-      artist: "Sungam",
-      title: "Plotter",
-      link: "WebApps/plotter-web.html",
-      image: "Pics/apps/plotter.webp",
-      description: "Draw to melody app with midi export. VST plugin in development."
+      image: "Pics/apps/colacut.webp",
+      description: "Keyframe time stretcher and transient auto-slicer with dynamic modulation routing and MIDI pitch tracking.",
+      releaseUrl: "https://github.com/SungamMagnus/colacut/releases/tag/v0.4.0"
     },
     {
       type: "video",
@@ -466,6 +470,9 @@
   }
 
   function renderDeviceRow(item) {
+    var wrapper = document.createElement('div');
+    wrapper.className = 'device-row-wrapper';
+
     var row = document.createElement('a');
     row.className = 'device-row';
     row.href = item.link;
@@ -488,7 +495,19 @@
         '<p class="device-description">' + item.description + '</p>' +
       '</div>';
 
-    return row;
+    wrapper.appendChild(row);
+
+    if (item.releaseUrl) {
+      var ghLink = document.createElement('a');
+      ghLink.href = item.releaseUrl;
+      ghLink.target = '_blank';
+      ghLink.rel = 'noopener';
+      ghLink.className = 'device-release-link';
+      ghLink.textContent = 'VST available on GitHub →';
+      wrapper.appendChild(ghLink);
+    }
+
+    return wrapper;
   }
 
   function render() {
