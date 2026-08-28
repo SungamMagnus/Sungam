@@ -354,7 +354,7 @@
     });
   }());
 
-  var TYPE_LABELS = { video: 'Video', music: 'Music', device: 'Device', visual: 'Stills', app: 'App', software: 'Software' };
+  var TYPE_LABELS = { video: 'Moving', music: 'Music', device: 'Device', visual: 'Still', app: 'App', software: 'Software' };
   var TYPE_ICONS = { video: 'icons/youtube.svg', music: 'icons/bandcamp.svg', device: 'icons/gumroad.svg', visual: 'icons/photo.svg', app: 'icons/gumroad.svg', software: 'icons/gumroad.svg' };
 
   var lightbox = document.getElementById('lightbox');
