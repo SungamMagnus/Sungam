@@ -32,7 +32,8 @@
       title: "Plotter",
       link: "WebApps/plotter-web.html",
       image: "Pics/apps/plotter.webp",
-      description: "Draw to melody app with midi export. VST plugin in development."
+      description: "Draw to melody with midi export.",
+      releaseUrl: "https://github.com/SungamMagnus/plotter/releases/tag/v0.1.0"
     },
     {
       type: "video",
