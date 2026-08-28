@@ -14,9 +14,12 @@
     --ink-soft:#8d8f8b;
     --line:#dcdbd4;
     --perform:#c2521a;
+    --perform-deep:#974014;
     --mod:#2e4b8f;
     --voice:#0f7a72;
+    --voice-deep:#0c5f59;
     --depth:#a8285a;
+    --depth-deep:#831f46;
     --on-text:#f2f1ec;
   }
   *{box-sizing:border-box}
@@ -104,13 +107,14 @@
     width:11px;height:22px;border:0;border-radius:2.5px;background:var(--ink);
   }
 
-  /* Each bank's handle carries that section's colour. */
-  .bank.perform input[type=range]::-webkit-slider-thumb{background:var(--perform)}
-  .bank.perform input[type=range]::-moz-range-thumb{background:var(--perform)}
-  .bank.mod input[type=range]::-webkit-slider-thumb{background:var(--depth)}
-  .bank.mod input[type=range]::-moz-range-thumb{background:var(--depth)}
-  .bank.voice input[type=range]::-webkit-slider-thumb{background:var(--voice)}
-  .bank.voice input[type=range]::-moz-range-thumb{background:var(--voice)}
+  /* Each bank's handle carries that section's colour, a step darker than
+     the labels and rules so it reads as a control rather than a highlight. */
+  .bank.perform input[type=range]::-webkit-slider-thumb{background:var(--perform-deep)}
+  .bank.perform input[type=range]::-moz-range-thumb{background:var(--perform-deep)}
+  .bank.mod input[type=range]::-webkit-slider-thumb{background:var(--depth-deep)}
+  .bank.mod input[type=range]::-moz-range-thumb{background:var(--depth-deep)}
+  .bank.voice input[type=range]::-webkit-slider-thumb{background:var(--voice-deep)}
+  .bank.voice input[type=range]::-moz-range-thumb{background:var(--voice-deep)}
   input[type=range]:hover::-webkit-slider-thumb{box-shadow:0 0 0 3px rgba(0,0,0,.10)}
   input[type=range]:hover::-moz-range-thumb{box-shadow:0 0 0 3px rgba(0,0,0,.10)}
   input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 5px rgba(0,0,0,.14)}

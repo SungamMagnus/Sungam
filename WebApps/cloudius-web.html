@@ -15,8 +15,10 @@
     --ink-soft:#8a908c;
     --line:#d6dad6;
     --grain:#2e7d52;
+    --grain-deep:#246240;
     --engine:#c17d1f;
     --blend:#ab3b2c;
+    --blend-deep:#852e22;
     --hot:#d6452f;
     --on-text:#eef0ec;
   }
@@ -98,11 +100,12 @@
     width:11px;height:22px;border:0;border-radius:2.5px;background:var(--ink);
   }
 
-  /* Each bank's handle carries that section's colour. */
-  .bank.grain input[type=range]::-webkit-slider-thumb{background:var(--grain)}
-  .bank.grain input[type=range]::-moz-range-thumb{background:var(--grain)}
-  .bank.blend input[type=range]::-webkit-slider-thumb{background:var(--blend)}
-  .bank.blend input[type=range]::-moz-range-thumb{background:var(--blend)}
+  /* Each bank's handle carries that section's colour, a step darker than
+     the labels and rules so it reads as a control rather than a highlight. */
+  .bank.grain input[type=range]::-webkit-slider-thumb{background:var(--grain-deep)}
+  .bank.grain input[type=range]::-moz-range-thumb{background:var(--grain-deep)}
+  .bank.blend input[type=range]::-webkit-slider-thumb{background:var(--blend-deep)}
+  .bank.blend input[type=range]::-moz-range-thumb{background:var(--blend-deep)}
   input[type=range]:hover::-webkit-slider-thumb{box-shadow:0 0 0 3px rgba(0,0,0,.10)}
   input[type=range]:hover::-moz-range-thumb{box-shadow:0 0 0 3px rgba(0,0,0,.10)}
   input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 5px rgba(0,0,0,.14)}
