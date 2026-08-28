@@ -219,49 +219,89 @@ const SAMPLES = [
    engine is lib/KeyframeRecorder.h and friends compiled to WebAssembly.
    ─────────────────────────────────────────────────────────────────────────── */
 const WORKLET_SRC = `
+/* Tapers, identical to the ones the panel uses for its readouts and to
+   plugin/Source/Parameters.cpp. Modulation is applied to the normalised
+   position *before* the taper, which is what the plug-in does. */
+const lg = (v, lo, hi) => lo * Math.pow(hi / lo, v);
+const clamp01 = (v) => v < 0 ? 0 : (v > 1 ? 1 : v);
+
 class ColacutProcessor extends AudioWorkletProcessor {
-  constructor () {
+  constructor (options) {
     super();
+    this.ready = false;
     this.p = {
       pitch: 0.5, stretch: 0.5, thresh: 0.5, grain: 0.3, quality: 1, feedback: 0,
       smooth: 0.45, fade: 0.22, drive: 0.14, character: 1, mix: 1, fbtone: 0.4,
-      route: [0,0,0,0,0,0], depth: [0,0,0,0,0,0]
+      route: [1,1,1,1,1,1], depth: [0,0,0,0,0,0], wheel: 0
     };
-    this.envIn = 0; this.envOut = 0;
-    this.port.onmessage = (e) => {
-      const d = e.data;
+
+    WebAssembly.instantiate(options.processorOptions.wasm).then((r) => {
+      const e = r.instance.exports;
+      e._initialize();
+      e.colacut_init(sampleRate);
+      this.e = e;
+      this.L = new Float32Array(e.memory.buffer, e.colacut_buf_l(), 2048);
+      this.R = new Float32Array(e.memory.buffer, e.colacut_buf_r(), 2048);
+      this.ready = true;
+      this.port.postMessage({ ready: true, latency: e.colacut_latency() });
+    }).catch((err) => this.port.postMessage({ error: String(err) }));
+
+    this.port.onmessage = (ev) => {
+      const d = ev.data;
       if (d.type === 'params') Object.assign(this.p, d.value);
-      else if (d.type === 'slice') this.slice = true;
+      else if (d.type === 'slice' && this.e) this.e.colacut_slice();
     };
   }
 
   process (inputs, outputs) {
     const inp = inputs[0], out = outputs[0];
     if (!out || out.length === 0) return true;
-
     const oL = out[0], oR = out[1] || out[0];
     const iL = inp && inp[0] ? inp[0] : null;
     const iR = inp && inp[1] ? inp[1] : iL;
-    const n  = oL.length;
+    const n = oL.length;
 
-    // ── DSP SEAM ───────────────────────────────────────────────────────────
-    // TODO: replace with the WASM build of the keyframe engine.
-    // Straight through for now - nothing here pretends to time-stretch.
-    let peak = 0;
-    for (let i = 0; i < n; i++) {
-      const l = iL ? iL[i] : 0, r = iR ? iR[i] : 0;
-      oL[i] = l; oR[i] = r;
-      const a = Math.abs(l) > Math.abs(r) ? Math.abs(l) : Math.abs(r);
-      if (a > peak) peak = a;
+    if (!this.ready) {
+      for (let i = 0; i < n; i++) { oL[i] = iL ? iL[i] : 0; oR[i] = iR ? iR[i] : 0; }
+      return true;
     }
-    // ───────────────────────────────────────────────────────────────────────
 
-    // The followers are real even while the engine is a stub - they are what
-    // the modulation matrix routes, so the panel can show them working.
-    this.envIn  += 0.05 * (peak - this.envIn);
-    this.envOut += 0.05 * (peak - this.envOut);
+    const e = this.e, p = this.p;
+
+    // the followers are what the matrix routes
+    const src = [e.colacut_env_in(), e.colacut_env_out(), p.wheel];
+    const m = (i, base) => clamp01(base + p.depth[i] * src[p.route[i]]);
+
+    const pitch   = m(0, p.pitch);
+    const stretch = m(1, p.stretch);
+    const thresh  = m(2, p.thresh);
+    const grain   = m(3, p.grain);
+    const quality = m(4, p.quality);
+    const fb      = m(5, p.feedback);
+
+    e.colacut_set_params(
+      -12 + 24 * pitch,
+      Math.pow(1 - stretch, 2.5),
+      thresh > 0.99 ? 1e9 : (thresh <= 0.9 ? thresh * (4 / 0.9) : 4 + (thresh - 0.9) * 40),
+      32 + 4064 * grain,
+      0.1 + quality * (0.001 - 0.1),
+      1.5 * fb,
+      lg(p.smooth, 1, 3000),
+      lg(p.fade, 10, 250),
+      0.5 + p.drive * 3.5,
+      p.character,
+      p.mix,
+      lg(p.fbtone, 40, 18000));
+
+    for (let i = 0; i < n; i++) { this.L[i] = iL ? iL[i] : 0; this.R[i] = iR ? iR[i] : 0; }
+    e.colacut_process(n);
+    for (let i = 0; i < n; i++) { oL[i] = this.L[i]; oR[i] = this.R[i]; }
+
     if ((currentFrame & 1023) < n) {
-      this.port.postMessage({ envIn: this.envIn, envOut: this.envOut });
+      this.port.postMessage({
+        envIn: e.colacut_env_in(), envOut: e.colacut_env_out(),
+        gate: e.colacut_in_gate() === 1
+      });
     }
     return true;
   }
@@ -273,6 +313,7 @@ registerProcessor('colacut', ColacutProcessor);
 let ac = null, node = null, master = null, analyser = null;
 let buffer = null, source = null, playing = false, looping = true;
 let meterData = null;
+const live = { envIn: 0, envOut: 0 };
 
 const TARGETS = ["Pitch", "Stretch", "Thresh", "Grain", "Quality", "Feedback"];
 const SOURCES = ["In", "Out", "Mod"];
@@ -375,10 +416,30 @@ async function initAudio () {
 
   try {
     const blob = new Blob([WORKLET_SRC], { type: "application/javascript" });
-    await ac.audioWorklet.addModule(URL.createObjectURL(blob));
+    const [, wasm] = await Promise.all([
+      ac.audioWorklet.addModule(URL.createObjectURL(blob)),
+      fetch("colacut.wasm").then((r) => {
+        if (!r.ok) throw new Error("colacut.wasm " + r.status);
+        return r.arrayBuffer();
+      })
+    ]);
     node = new AudioWorkletNode(ac, "colacut", {
-      numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2]
+      numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2],
+      processorOptions: { wasm }
     });
+    node.port.onmessage = (ev) => {
+      const d = ev.data;
+      if (d.ready) {
+        const b = $("dspBadge");
+        b.textContent = "DSP: keyframe engine";
+        b.title = "The Capicola keyframe engine, compiled to WebAssembly";
+        $("srInfo").textContent = Math.round(ac.sampleRate / 100) / 10 + " kHz \u00b7 "
+                                + (d.latency / ac.sampleRate * 1000).toFixed(0) + " ms latency";
+      }
+      if (d.error) setStatus("engine failed to start - " + d.error, true);
+      if (typeof d.envIn === "number") { live.envIn = d.envIn; live.envOut = d.envOut; }
+      if (d.gate !== undefined) $("lampSlice").classList.toggle("on", d.gate);
+    };
   } catch (err) {
     /* An AudioWorklet module cannot be fetched from a file:// page - the blob
        URL has a null origin. The DSP is a pass-through stub either way, so
