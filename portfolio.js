@@ -572,10 +572,11 @@
     });
   });
 
-  // Tabs
+  render();
+
+  // Tabs (Portfolio / About)
   var tabs = document.querySelectorAll('[data-tab-link]');
   var panels = {
-    hero: document.getElementById('panel-hero'),
     portfolio: document.getElementById('panel-portfolio'),
     about: document.getElementById('panel-about'),
     inspiration: document.getElementById('panel-inspiration')
@@ -589,8 +590,6 @@
     document.querySelectorAll('.tab').forEach(function (tab) {
       tab.setAttribute('aria-selected', String(tab.dataset.tabLink === name));
     });
-    document.body.classList.toggle('hero-active', name === 'hero');
-    document.querySelector('.site-main').classList.toggle('site-main--hero', name === 'hero');
   }
 
   tabs.forEach(function (el) {
@@ -602,27 +601,6 @@
     });
   });
 
-  // Hero nav buttons → portfolio with filter
-  document.querySelectorAll('[data-hero-filter]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var type = btn.dataset.heroFilter;
-      activeType = type;
-      filterPills.forEach(function (p) {
-        p.setAttribute('aria-checked', String(p.dataset.type === type));
-      });
-      activateTab('portfolio');
-      render();
-      history.replaceState(null, '', '#portfolio');
-    });
-  });
-
-  var initialTab = window.location.hash.replace('#', '') || 'hero';
-  if (initialTab === 'portfolio') {
-    render();
-    activateTab('portfolio');
-  } else if (panels[initialTab]) {
-    activateTab(initialTab);
-  } else {
-    activateTab('hero');
-  }
+  var initialTab = window.location.hash.replace('#', '');
+  if (panels[initialTab]) activateTab(initialTab);
 })();
