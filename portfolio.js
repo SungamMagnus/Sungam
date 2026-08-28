@@ -572,15 +572,21 @@
     });
   });
 
-  render();
-
-  // Tabs (Portfolio / About)
+  // Tabs
   var tabs = document.querySelectorAll('[data-tab-link]');
   var panels = {
     portfolio: document.getElementById('panel-portfolio'),
     about: document.getElementById('panel-about'),
     inspiration: document.getElementById('panel-inspiration')
   };
+
+  var categoryLinks = document.querySelectorAll('[data-category]');
+
+  function setActiveCategoryLink(type) {
+    categoryLinks.forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.category === type));
+    });
+  }
 
   function activateTab(name) {
     if (!panels[name]) return;
@@ -590,7 +596,25 @@
     document.querySelectorAll('.tab').forEach(function (tab) {
       tab.setAttribute('aria-selected', String(tab.dataset.tabLink === name));
     });
+    if (name !== 'portfolio') setActiveCategoryLink('');
   }
+
+  function goToCategory(type) {
+    activeType = type;
+    filterPills.forEach(function (p) {
+      p.setAttribute('aria-checked', String(p.dataset.type === type));
+    });
+    setActiveCategoryLink(type);
+    activateTab('portfolio');
+    render();
+    history.replaceState(null, '', '#' + type);
+  }
+
+  categoryLinks.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      goToCategory(btn.dataset.category);
+    });
+  });
 
   tabs.forEach(function (el) {
     el.addEventListener('click', function (e) {
@@ -601,6 +625,14 @@
     });
   });
 
-  var initialTab = window.location.hash.replace('#', '');
-  if (panels[initialTab]) activateTab(initialTab);
+  // Resolve initial state from URL hash
+  var hash = window.location.hash.replace('#', '');
+  var categoryTypes = ['music', 'video', 'visual', 'software'];
+  if (categoryTypes.indexOf(hash) !== -1) {
+    goToCategory(hash);
+  } else if (panels[hash]) {
+    activateTab(hash);
+  } else {
+    goToCategory('music');
+  }
 })();
