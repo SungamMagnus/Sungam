@@ -11,6 +11,20 @@
     {
       type: "app",
       artist: "Sungam",
+      title: "Cloudius",
+      link: "WebApps/cloudius-web.html",
+      description: "Granular texture processor in the browser. VST3/AU plug-in available."
+    },
+    {
+      type: "app",
+      artist: "Sungam",
+      title: "Colacut",
+      link: "WebApps/colacut-web.html",
+      description: "Keyframe time stretcher and transient auto-slicer. VST3/AU plug-in available."
+    },
+    {
+      type: "app",
+      artist: "Sungam",
       title: "Plotter",
       link: "WebApps/plotter-web.html",
       image: "Pics/apps/plotter.webp",

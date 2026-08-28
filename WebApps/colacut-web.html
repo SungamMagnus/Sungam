@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COLACUT — time stretcher / auto-slicer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f2f1ec;
+    --ink:#191c1b;
+    --ink-soft:#8d8f8b;
+    --line:#dcdbd4;
+    --perform:#c2521a;
+    --mod:#2e4b8f;
+    --voice:#0f7a72;
+    --depth:#a8285a;
+    --on-text:#f2f1ec;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:#e6e4dc;color:var(--ink);
+    font-family:"DM Mono",ui-monospace,Menlo,monospace;font-size:12px;
+    display:flex;flex-direction:column;
+  }
+  .frame{
+    flex:1;min-height:0;margin:14px;border:2px solid var(--ink);background:var(--paper);
+    display:flex;flex-direction:column;padding:18px 22px 22px;
+  }
+  .masthead{display:flex;align-items:baseline;gap:22px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:28px;font-weight:500;letter-spacing:.22em}
+  .tagline{margin:0;font-size:13px;opacity:.7}
+  .masthead a{margin-left:auto;color:var(--ink);opacity:.6;letter-spacing:.14em;text-transform:uppercase}
+  .masthead a:hover{opacity:1}
+
+  h2{margin:0 0 10px;font-size:11px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;opacity:.55}
+
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:14px}
+  .row .push{margin-left:auto}
+
+  button,select{
+    font-family:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink);background:transparent;border:1.5px solid var(--ink);border-radius:0;
+    padding:0 14px;height:34px;cursor:pointer;
+  }
+  button:hover,select:hover{background:rgba(25,28,27,.07)}
+  button[aria-pressed="true"],button.primary{background:var(--ink);color:var(--on-text)}
+  button:disabled{opacity:.35;cursor:not-allowed}
+  button.small{height:28px;padding:0 10px;font-size:11px}
+  button.tiny{height:24px;padding:0 7px;font-size:10px;letter-spacing:.08em}
+  button.slice[aria-pressed="true"]{background:var(--perform);border-color:var(--perform)}
+  button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--perform);outline-offset:2px}
+  .seg{display:flex}
+  .seg button{margin-left:-1.5px}
+  .seg button:first-child{margin-left:0}
+  .seg.mod button[aria-pressed="true"]{background:var(--mod);border-color:var(--mod)}
+
+  label.file{
+    display:inline-flex;align-items:center;height:34px;padding:0 14px;cursor:pointer;
+    border:1.5px dashed var(--ink);letter-spacing:.14em;text-transform:uppercase;
+  }
+  label.file:hover{background:rgba(25,28,27,.07)}
+  label.file input{display:none}
+
+  .banks{display:flex;gap:26px;flex-wrap:wrap;padding-top:18px}
+  .bank{flex:1 1 260px;min-width:250px;border-top:1.5px solid var(--ink);padding-top:10px}
+  .bank.perform{border-color:var(--perform)}
+  .bank.mod{border-color:var(--mod)}
+  .bank.voice{border-color:var(--voice)}
+  .bank h2{opacity:1}
+  .bank.perform h2{color:var(--perform)}
+  .bank.mod h2{color:var(--mod)}
+  .bank.voice h2{color:var(--voice)}
+
+  .ctl{display:grid;grid-template-columns:74px 1fr 62px;align-items:center;gap:10px;padding:5px 0}
+  .ctl .name{letter-spacing:.12em;text-transform:uppercase;opacity:.7;font-size:11px}
+  .ctl .val{text-align:right;letter-spacing:.06em}
+  .perform .val{color:var(--perform)}
+  .voice .val{color:var(--voice)}
+
+  /* modulation matrix: target | source | depth */
+  .mrow{display:grid;grid-template-columns:64px auto 1fr 46px;align-items:center;gap:8px;padding:4px 0}
+  .mrow .tgt{letter-spacing:.1em;text-transform:uppercase;opacity:.7;font-size:10px}
+  .mrow .dv{text-align:right;font-size:11px;color:var(--depth)}
+  .mrow .dv.off{color:var(--ink);opacity:.3}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent}
+  input[type=range]::-webkit-slider-runnable-track{height:1.5px;background:var(--ink-soft)}
+  input[type=range]::-moz-range-track{height:1.5px;background:var(--ink-soft)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:3px;height:18px;background:var(--ink);margin-top:-8px}
+  input[type=range]::-moz-range-thumb{width:3px;height:18px;border:0;border-radius:0;background:var(--ink)}
+
+  .meter{width:120px;height:7px;border:1px solid var(--ink-soft);background:rgba(25,28,27,.06)}
+  .meter i{display:block;height:100%;width:0;background:var(--voice)}
+  .lamp{width:9px;height:9px;border:1px solid var(--ink-soft);background:rgba(25,28,27,.08)}
+  .lamp.on{background:var(--perform);border-color:var(--perform)}
+
+  .statusbar{
+    margin-top:auto;padding-top:14px;border-top:1px solid var(--line);
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-size:11px;opacity:.65;
+  }
+  .badge{border:1px solid var(--perform);color:var(--perform);padding:2px 8px;letter-spacing:.1em;text-transform:uppercase}
+  .hint{font-size:11px;opacity:.55;padding-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header class="masthead">
+    <h1>COLACUT</h1>
+    <p class="tagline">keyframe time stretcher / transient auto-slicer</p>
+    <a href="https://github.com/SungamMagnus/colacut" target="_blank" rel="noopener">source ↗</a>
+  </header>
+
+  <!-- ── Source ─────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="row"><h2 style="margin:0">Source</h2></div>
+    <div class="row" id="sampleRow"></div>
+    <div class="row">
+      <label class="file">Load audio<input type="file" id="fileIn" accept="audio/*"></label>
+      <button id="btnPlay" class="primary" disabled>Play</button>
+      <button id="btnLoop" aria-pressed="true">Loop</button>
+      <span class="readout" id="srcName" style="opacity:.6">no sample loaded</span>
+      <span class="push"></span>
+      <span class="meter"><i id="meterFill"></i></span>
+    </div>
+  </section>
+
+  <!-- ── Controls ───────────────────────────────────────────────────────── -->
+  <div class="banks">
+
+    <div class="bank perform">
+      <h2>Perform</h2>
+      <div class="ctl"><span class="name">Pitch</span>    <input type="range" id="p_pitch"    min="0" max="1" step="0.001" value="0.5"><span class="val" id="v_pitch">0.0 st</span></div>
+      <div class="ctl"><span class="name">Stretch</span>  <input type="range" id="p_stretch"  min="0" max="1" step="0.001" value="0.5"><span class="val" id="v_stretch">5.7x</span></div>
+      <div class="ctl"><span class="name">Thresh</span>   <input type="range" id="p_thresh"   min="0" max="1" step="0.001" value="0.5"><span class="val" id="v_thresh">2.2</span></div>
+      <div class="ctl"><span class="name">Grain</span>    <input type="range" id="p_grain"    min="0" max="1" step="0.001" value="0.3"><span class="val" id="v_grain">1250</span></div>
+      <div class="ctl"><span class="name">Quality</span>  <input type="range" id="p_quality"  min="0" max="1" step="0.001" value="1"><span class="val" id="v_quality">100%</span></div>
+      <div class="ctl"><span class="name">Feedback</span> <input type="range" id="p_feedback" min="0" max="1" step="0.001" value="0"><span class="val" id="v_feedback">0.00</span></div>
+      <div class="row" style="padding-top:10px">
+        <button id="btnSlice" class="small slice">Slice</button>
+        <span class="lamp" id="lampSlice"></span>
+        <span class="hint" style="padding:0">manual splice</span>
+      </div>
+    </div>
+
+    <div class="bank mod">
+      <h2>Modulation</h2>
+      <div class="hint" style="padding-top:0">
+        Each performance control is normalised to a follower, so the signal's
+        own dynamics move it.
+      </div>
+      <div id="matrix"></div>
+      <div class="hint">
+        In · out follower, or the mod wheel. Depth is bipolar.
+      </div>
+    </div>
+
+    <div class="bank voice">
+      <h2>Voice</h2>
+      <div class="ctl"><span class="name">Smooth</span>    <input type="range" id="p_smooth"    min="0" max="1" step="0.001" value="0.45"><span class="val" id="v_smooth">34Hz</span></div>
+      <div class="ctl"><span class="name">Fade</span>      <input type="range" id="p_fade"      min="0" max="1" step="0.001" value="0.22"><span class="val" id="v_fade">20ms</span></div>
+      <div class="ctl"><span class="name">Drive</span>     <input type="range" id="p_drive"     min="0" max="1" step="0.001" value="0.14"><span class="val" id="v_drive">1.00</span></div>
+      <div class="ctl"><span class="name">Character</span> <input type="range" id="p_character" min="0" max="1" step="0.001" value="1"><span class="val" id="v_character">SINC</span></div>
+      <div class="ctl"><span class="name">Mix</span>       <input type="range" id="p_mix"       min="0" max="1" step="0.001" value="1"><span class="val" id="v_mix">100%</span></div>
+      <div class="ctl"><span class="name">FB Tone</span>   <input type="range" id="p_fbtone"    min="0" max="1" step="0.001" value="0.4"><span class="val" id="v_fbtone">480Hz</span></div>
+    </div>
+
+  </div>
+
+  <footer class="statusbar">
+    <span class="badge" id="dspBadge">DSP: stub</span>
+    <span id="srInfo">—</span>
+    <span class="push"></span>
+    <span>Keyframe engine © Heavylight Industries, AGPL-3.0 — Colacut is a fork</span>
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+
+/* ───────────────────────────────────────────────────────────────────────────
+   SAMPLES — drop audio files into WebApps/samples/ and list them here.
+   Anything the browser can decode works (mp3, wav, ogg, m4a, flac).
+   ─────────────────────────────────────────────────────────────────────────── */
+const SAMPLES = [
+  // { name: "Break",  file: "samples/break.wav" },
+  // { name: "Guitar", file: "samples/guitar.mp3" },
+];
+
+/* ───────────────────────────────────────────────────────────────────────────
+   DSP — the audio worklet.
+
+   The seam is marked below. Today it passes audio through so the transport,
+   the loop and the whole control surface are testable end to end. The real
+   engine is lib/KeyframeRecorder.h and friends compiled to WebAssembly.
+   ─────────────────────────────────────────────────────────────────────────── */
+const WORKLET_SRC = `
+class ColacutProcessor extends AudioWorkletProcessor {
+  constructor () {
+    super();
+    this.p = {
+      pitch: 0.5, stretch: 0.5, thresh: 0.5, grain: 0.3, quality: 1, feedback: 0,
+      smooth: 0.45, fade: 0.22, drive: 0.14, character: 1, mix: 1, fbtone: 0.4,
+      route: [0,0,0,0,0,0], depth: [0,0,0,0,0,0]
+    };
+    this.envIn = 0; this.envOut = 0;
+    this.port.onmessage = (e) => {
+      const d = e.data;
+      if (d.type === 'params') Object.assign(this.p, d.value);
+      else if (d.type === 'slice') this.slice = true;
+    };
+  }
+
+  process (inputs, outputs) {
+    const inp = inputs[0], out = outputs[0];
+    if (!out || out.length === 0) return true;
+
+    const oL = out[0], oR = out[1] || out[0];
+    const iL = inp && inp[0] ? inp[0] : null;
+    const iR = inp && inp[1] ? inp[1] : iL;
+    const n  = oL.length;
+
+    // ── DSP SEAM ───────────────────────────────────────────────────────────
+    // TODO: replace with the WASM build of the keyframe engine.
+    // Straight through for now - nothing here pretends to time-stretch.
+    let peak = 0;
+    for (let i = 0; i < n; i++) {
+      const l = iL ? iL[i] : 0, r = iR ? iR[i] : 0;
+      oL[i] = l; oR[i] = r;
+      const a = Math.abs(l) > Math.abs(r) ? Math.abs(l) : Math.abs(r);
+      if (a > peak) peak = a;
+    }
+    // ───────────────────────────────────────────────────────────────────────
+
+    // The followers are real even while the engine is a stub - they are what
+    // the modulation matrix routes, so the panel can show them working.
+    this.envIn  += 0.05 * (peak - this.envIn);
+    this.envOut += 0.05 * (peak - this.envOut);
+    if ((currentFrame & 1023) < n) {
+      this.port.postMessage({ envIn: this.envIn, envOut: this.envOut });
+    }
+    return true;
+  }
+}
+registerProcessor('colacut', ColacutProcessor);
+`;
+
+/* ── State ─────────────────────────────────────────────────────────────── */
+let ac = null, node = null, master = null, analyser = null;
+let buffer = null, source = null, playing = false, looping = true;
+let meterData = null;
+
+const TARGETS = ["Pitch", "Stretch", "Thresh", "Grain", "Quality", "Feedback"];
+const SOURCES = ["In", "Out", "Mod"];
+
+const params = {
+  pitch: 0.5, stretch: 0.5, thresh: 0.5, grain: 0.3, quality: 1, feedback: 0,
+  smooth: 0.45, fade: 0.22, drive: 0.14, character: 1, mix: 1, fbtone: 0.4,
+  route: [1, 1, 1, 1, 1, 1],
+  depth: [0, 0, 0, 0, 0, 0]
+};
+
+const $ = (id) => document.getElementById(id);
+const pct = (v) => Math.round(v * 100) + "%";
+const logv = (v, lo, hi) => lo * Math.pow(hi / lo, v);
+
+/* Tapers mirrored from plugin/Source/Parameters.cpp. */
+function stretchText (v) {
+  const s = Math.pow(1 - v, 2.5);
+  return s < 1e-4 ? "FREEZE" : (1 / s).toFixed(1) + "x";
+}
+function thresholdText (v) {
+  if (v > 0.99) return "MUTE";
+  const r = v <= 0.9 ? v * (4 / 0.9) : 4 + (v - 0.9) * 40;
+  return r.toFixed(1);
+}
+function characterText (v) {
+  if (v < 0.02) return "QUAKE";
+  if (v > 0.98) return "SINC";
+  if (Math.abs(v - 0.5) < 0.02) return "CLEAN";
+  return (v < 0.5 ? "QK " : "SC ") + Math.round(Math.abs(v - 0.5) * 200) + "%";
+}
+function hz (v) { return v < 1000 ? Math.round(v) + "Hz" : (v / 1000).toFixed(1) + "kHz"; }
+
+function readouts () {
+  $("v_pitch").textContent    = (-12 + 24 * params.pitch).toFixed(1) + " st";
+  $("v_stretch").textContent  = stretchText(params.stretch);
+  $("v_thresh").textContent   = thresholdText(params.thresh);
+  $("v_grain").textContent    = Math.round(32 + 4064 * params.grain);
+  $("v_quality").textContent  = pct(params.quality);
+  $("v_feedback").textContent = (params.feedback * 1.5).toFixed(2);
+
+  $("v_smooth").textContent    = hz(logv(params.smooth, 1, 3000));
+  $("v_fade").textContent      = logv(params.fade, 10, 250).toFixed(0) + "ms";
+  $("v_drive").textContent     = (0.5 + params.drive * 3.5).toFixed(2);
+  $("v_character").textContent = characterText(params.character);
+  $("v_mix").textContent       = pct(params.mix);
+  $("v_fbtone").textContent    = hz(logv(params.fbtone, 40, 18000));
+
+  for (let i = 0; i < 6; i++) {
+    const d  = params.depth[i];
+    const el = $("dv_" + i);
+    el.textContent = Math.abs(d) < 0.01 ? "OFF" : (d > 0 ? "+" : "") + d.toFixed(2);
+    el.classList.toggle("off", Math.abs(d) < 0.01);
+  }
+}
+
+/* ── Modulation matrix ─────────────────────────────────────────────────── */
+function buildMatrix () {
+  const host = $("matrix");
+  TARGETS.forEach((name, i) => {
+    const row = document.createElement("div");
+    row.className = "mrow";
+
+    const tgt = document.createElement("span");
+    tgt.className = "tgt";
+    tgt.textContent = name;
+
+    const seg = document.createElement("div");
+    seg.className = "seg mod";
+    SOURCES.forEach((s, j) => {
+      const b = document.createElement("button");
+      b.className = "tiny";
+      b.textContent = s;
+      b.setAttribute("aria-pressed", String(j === params.route[i]));
+      b.onclick = () => {
+        seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", "false"));
+        b.setAttribute("aria-pressed", "true");
+        params.route[i] = j;
+        pushParams();
+      };
+      seg.appendChild(b);
+    });
+
+    const dep = document.createElement("input");
+    dep.type = "range"; dep.min = -1; dep.max = 1; dep.step = 0.01; dep.value = params.depth[i];
+    dep.oninput = (e) => { params.depth[i] = parseFloat(e.target.value); pushParams(); };
+
+    const dv = document.createElement("span");
+    dv.className = "dv off"; dv.id = "dv_" + i; dv.textContent = "OFF";
+
+    row.append(tgt, seg, dep, dv);
+    host.appendChild(row);
+  });
+}
+
+/* ── Audio ─────────────────────────────────────────────────────────────── */
+async function initAudio () {
+  if (ac) return;
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+
+  const blob = new Blob([WORKLET_SRC], { type: "application/javascript" });
+  await ac.audioWorklet.addModule(URL.createObjectURL(blob));
+
+  node = new AudioWorkletNode(ac, "colacut", {
+    numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2]
+  });
+
+  analyser = ac.createAnalyser();
+  analyser.fftSize = 256;
+  meterData = new Float32Array(analyser.fftSize);
+
+  master = ac.createGain();
+  master.gain.value = 0.9;
+
+  node.connect(analyser).connect(master).connect(ac.destination);
+  pushParams();
+  $("srInfo").textContent = Math.round(ac.sampleRate / 100) / 10 + " kHz host";
+  requestAnimationFrame(meterLoop);
+}
+
+function pushParams () {
+  if (node) node.port.postMessage({ type: "params", value: params });
+}
+
+function meterLoop () {
+  if (analyser) {
+    analyser.getFloatTimeDomainData(meterData);
+    let peak = 0;
+    for (let i = 0; i < meterData.length; i++) {
+      const a = Math.abs(meterData[i]);
+      if (a > peak) peak = a;
+    }
+    $("meterFill").style.width = Math.min(100, peak * 100) + "%";
+  }
+  readouts();
+  requestAnimationFrame(meterLoop);
+}
+
+function stop () {
+  if (source) { try { source.stop(); } catch (e) {} source.disconnect(); source = null; }
+  playing = false;
+  $("btnPlay").textContent = "Play";
+  $("btnPlay").classList.add("primary");
+}
+
+async function play () {
+  if (!buffer) return;
+  await initAudio();
+  if (ac.state === "suspended") await ac.resume();
+  stop();
+  source = ac.createBufferSource();
+  source.buffer = buffer;
+  source.loop = looping;
+  source.connect(node);
+  source.onended = () => { if (!looping) stop(); };
+  source.start();
+  playing = true;
+  $("btnPlay").textContent = "Stop";
+  $("btnPlay").classList.remove("primary");
+}
+
+async function loadArrayBuffer (arr, name) {
+  await initAudio();
+  buffer = await ac.decodeAudioData(arr);
+  $("srcName").textContent = name + " · " + buffer.duration.toFixed(1) + "s";
+  $("srcName").style.opacity = 1;
+  $("btnPlay").disabled = false;
+  if (playing) play();
+}
+
+function buildSampleRow () {
+  const row = $("sampleRow");
+  if (!SAMPLES.length) {
+    row.innerHTML = '<span style="opacity:.5">no bundled samples yet — load a file, '
+                  + 'or add entries to <code>SAMPLES</code> at the top of this file</span>';
+    return;
+  }
+  SAMPLES.forEach((s) => {
+    const b = document.createElement("button");
+    b.className = "small";
+    b.textContent = s.name;
+    b.onclick = async () => {
+      [...row.children].forEach((c) => c.setAttribute("aria-pressed", "false"));
+      b.setAttribute("aria-pressed", "true");
+      b.disabled = true;
+      try {
+        const r = await fetch(s.file);
+        if (!r.ok) throw new Error(r.status + " " + r.statusText);
+        await loadArrayBuffer(await r.arrayBuffer(), s.name);
+      } catch (err) {
+        $("srcName").textContent = "could not load " + s.file + " — " + err.message;
+        $("srcName").style.opacity = 1;
+      } finally {
+        b.disabled = false;
+      }
+    };
+    row.appendChild(b);
+  });
+}
+
+/* ── Wiring ────────────────────────────────────────────────────────────── */
+["pitch","stretch","thresh","grain","quality","feedback",
+ "smooth","fade","drive","character","mix","fbtone"].forEach((k) => {
+  $("p_" + k).addEventListener("input", (e) => {
+    params[k] = parseFloat(e.target.value);
+    pushParams();
+  });
+});
+
+$("btnSlice").onmousedown = () => {
+  if (node) node.port.postMessage({ type: "slice" });
+  $("lampSlice").classList.add("on");
+  setTimeout(() => $("lampSlice").classList.remove("on"), 110);
+};
+
+$("btnLoop").onclick = (e) => {
+  looping = !looping;
+  e.currentTarget.setAttribute("aria-pressed", String(looping));
+  if (source) source.loop = looping;
+};
+
+$("btnPlay").onclick = () => (playing ? stop() : play());
+
+$("fileIn").addEventListener("change", async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  document.querySelectorAll("#sampleRow button")
+          .forEach((c) => c.setAttribute("aria-pressed", "false"));
+  await loadArrayBuffer(await f.arrayBuffer(), f.name);
+});
+
+buildMatrix();
+buildSampleRow();
+readouts();
+</script>
+</body>
+</html>

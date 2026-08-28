@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLOUDIUS — granular texture processor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#eef0ec;
+    --sheet:#f6f7f5;
+    --ink:#15181b;
+    --ink-soft:#8a908c;
+    --line:#d6dad6;
+    --grain:#2e7d52;
+    --engine:#c17d1f;
+    --blend:#ab3b2c;
+    --hot:#d6452f;
+    --on-text:#eef0ec;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:#e2e5e1;color:var(--ink);
+    font-family:"DM Mono",ui-monospace,Menlo,monospace;font-size:12px;
+    display:flex;flex-direction:column;
+  }
+  .frame{
+    flex:1;min-height:0;margin:14px;border:2px solid var(--ink);background:var(--paper);
+    display:flex;flex-direction:column;padding:18px 22px 22px;
+  }
+  .masthead{display:flex;align-items:baseline;gap:22px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:28px;font-weight:500;letter-spacing:.22em}
+  .tagline{margin:0;font-size:13px;opacity:.7}
+  .masthead a{margin-left:auto;color:var(--ink);opacity:.6;letter-spacing:.14em;text-transform:uppercase}
+  .masthead a:hover{opacity:1}
+
+  h2{margin:0 0 10px;font-size:11px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;opacity:.55}
+
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:14px}
+  .row .push{margin-left:auto}
+
+  button,select{
+    font-family:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink);background:transparent;border:1.5px solid var(--ink);border-radius:0;
+    padding:0 14px;height:34px;cursor:pointer;
+  }
+  button:hover,select:hover{background:rgba(21,24,27,.07)}
+  button[aria-pressed="true"],button.primary{background:var(--ink);color:var(--on-text)}
+  button:disabled{opacity:.35;cursor:not-allowed}
+  button.small{height:28px;padding:0 10px;font-size:11px}
+  button.hot[aria-pressed="true"]{background:var(--hot);border-color:var(--hot)}
+  button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--engine);outline-offset:2px}
+  .seg{display:flex}
+  .seg button{margin-left:-1.5px}
+  .seg button:first-child{margin-left:0}
+
+  label.file{
+    display:inline-flex;align-items:center;height:34px;padding:0 14px;cursor:pointer;
+    border:1.5px dashed var(--ink);letter-spacing:.14em;text-transform:uppercase;
+  }
+  label.file:hover{background:rgba(21,24,27,.07)}
+  label.file input{display:none}
+
+  /* ── control banks ──────────────────────────────────────────────────── */
+  .banks{display:flex;gap:26px;flex-wrap:wrap;padding-top:18px}
+  .bank{flex:1 1 250px;min-width:230px;border-top:1.5px solid var(--ink);padding-top:10px}
+  .bank.grain{border-color:var(--grain)}
+  .bank.engine{border-color:var(--engine)}
+  .bank.blend{border-color:var(--blend)}
+  .bank h2{opacity:1}
+  .bank.grain h2{color:var(--grain)}
+  .bank.engine h2{color:var(--engine)}
+  .bank.blend h2{color:var(--blend)}
+
+  .ctl{display:grid;grid-template-columns:74px 1fr 62px;align-items:center;gap:10px;padding:5px 0}
+  .ctl .name{letter-spacing:.12em;text-transform:uppercase;opacity:.7;font-size:11px}
+  .ctl .val{text-align:right;letter-spacing:.06em}
+  .grain .val{color:var(--grain)}
+  .blend .val{color:var(--blend)}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent}
+  input[type=range]::-webkit-slider-runnable-track{height:1.5px;background:var(--ink-soft)}
+  input[type=range]::-moz-range-track{height:1.5px;background:var(--ink-soft)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:3px;height:18px;background:var(--ink);margin-top:-8px}
+  input[type=range]::-moz-range-thumb{width:3px;height:18px;border:0;border-radius:0;background:var(--ink)}
+
+  .stack{display:flex;flex-direction:column;gap:8px;padding-top:4px}
+  .stack .lbl{letter-spacing:.12em;text-transform:uppercase;opacity:.55;font-size:10px}
+
+  /* ── buffer readout ─────────────────────────────────────────────────── */
+  .buffer{height:22px;border:1.5px solid var(--ink);position:relative;background:rgba(21,24,27,.05);margin-top:4px}
+  .buffer .win{position:absolute;top:0;bottom:0;background:rgba(193,125,31,.45)}
+  .buffer .head{position:absolute;top:-2px;bottom:-2px;width:1.5px;background:var(--ink)}
+
+  /* ── meter ──────────────────────────────────────────────────────────── */
+  .meter{width:120px;height:7px;border:1px solid var(--ink-soft);background:rgba(21,24,27,.06)}
+  .meter i{display:block;height:100%;width:0;background:var(--grain)}
+
+  .statusbar{
+    margin-top:auto;padding-top:14px;border-top:1px solid var(--line);
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-size:11px;opacity:.65;
+  }
+  .badge{border:1px solid var(--engine);color:var(--engine);padding:2px 8px;letter-spacing:.1em;text-transform:uppercase}
+  .hint{font-size:11px;opacity:.55;padding-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header class="masthead">
+    <h1>CLOUDIUS</h1>
+    <p class="tagline">granular texture processor — after Clouds</p>
+    <a href="https://github.com/SungamMagnus/cloudius" target="_blank" rel="noopener">source ↗</a>
+  </header>
+
+  <!-- ── Source ─────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="row"><h2 style="margin:0">Source</h2></div>
+    <div class="row" id="sampleRow"></div>
+    <div class="row">
+      <label class="file">Load audio<input type="file" id="fileIn" accept="audio/*"></label>
+      <button id="btnPlay" class="primary" disabled>Play</button>
+      <button id="btnLoop" aria-pressed="true">Loop</button>
+      <span class="readout" id="srcName" style="opacity:.6">no sample loaded</span>
+      <span class="push"></span>
+      <span class="meter"><i id="meterFill"></i></span>
+    </div>
+  </section>
+
+  <!-- ── Controls ───────────────────────────────────────────────────────── -->
+  <div class="banks">
+
+    <div class="bank grain">
+      <h2>Grain</h2>
+      <div class="ctl"><span class="name">Pitch</span>    <input type="range" id="p_pitch"    min="0" max="1" step="0.001" value="0.5"><span class="val" id="v_pitch">0.0 st</span></div>
+      <div class="ctl"><span class="name">Position</span> <input type="range" id="p_position" min="0" max="1" step="0.001" value="0"><span class="val" id="v_position">0%</span></div>
+      <div class="ctl"><span class="name">Size</span>     <input type="range" id="p_size"     min="0" max="1" step="0.001" value="0.5"><span class="val" id="v_size">128ms</span></div>
+      <div class="ctl"><span class="name">Density</span>  <input type="range" id="p_density"  min="0" max="1" step="0.001" value="0.5"><span class="val" id="v_density">OFF</span></div>
+      <div class="ctl"><span class="name">Texture</span>  <input type="range" id="p_texture"  min="0" max="1" step="0.001" value="0.5"><span class="val" id="v_texture">50%</span></div>
+      <div class="stack">
+        <span class="lbl">Note — midi pitch tracking</span>
+        <div class="seg" id="segNote">
+          <button class="small" data-i="0" aria-pressed="true">Off</button>
+          <button class="small" data-i="1" aria-pressed="false">Track</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bank engine">
+      <h2>Engine</h2>
+      <div class="stack">
+        <span class="lbl">Mode</span>
+        <div class="seg" id="segMode">
+          <button class="small" data-i="0" aria-pressed="true">Granular</button>
+          <button class="small" data-i="1" aria-pressed="false">Stretch</button>
+          <button class="small" data-i="2" aria-pressed="false">Delay</button>
+          <button class="small" data-i="3" aria-pressed="false">Spectral</button>
+        </div>
+        <span class="lbl" id="modeCaption">grain cloud — size and density scatter it</span>
+
+        <span class="lbl" style="padding-top:6px">Quality — buffer length and fidelity</span>
+        <div class="seg" id="segQuality">
+          <button class="small" data-i="0" aria-pressed="true">1s ST</button>
+          <button class="small" data-i="1" aria-pressed="false">2s MO</button>
+          <button class="small" data-i="2" aria-pressed="false">4s ST</button>
+          <button class="small" data-i="3" aria-pressed="false">8s MO</button>
+        </div>
+        <span class="lbl" id="qualityCaption">32 kHz stereo, 16-bit</span>
+
+        <span class="lbl" style="padding-top:6px">Buffer</span>
+        <div class="buffer" id="buffer"><i class="win" id="bufWin"></i><i class="head" id="bufHead"></i></div>
+
+        <div class="row" style="padding-top:8px">
+          <button id="btnFreeze" class="small hot" aria-pressed="false">Freeze</button>
+          <button id="btnTrig" class="small">Trig</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bank blend">
+      <h2>Blend</h2>
+      <div class="ctl"><span class="name">Dry/Wet</span>  <input type="range" id="p_drywet"   min="0" max="1" step="0.001" value="0.5"><span class="val" id="v_drywet">50%</span></div>
+      <div class="ctl"><span class="name">Spread</span>   <input type="range" id="p_spread"   min="0" max="1" step="0.001" value="0"><span class="val" id="v_spread">0%</span></div>
+      <div class="ctl"><span class="name">Feedback</span> <input type="range" id="p_feedback" min="0" max="1" step="0.001" value="0"><span class="val" id="v_feedback">0%</span></div>
+      <div class="ctl"><span class="name">Reverb</span>   <input type="range" id="p_reverb"   min="0" max="1" step="0.001" value="0"><span class="val" id="v_reverb">0%</span></div>
+      <p class="hint">
+        The four values Clouds hides behind one shared Blend knob, each on its
+        own control.
+      </p>
+    </div>
+
+  </div>
+
+  <footer class="statusbar">
+    <span class="badge" id="dspBadge">DSP: stub</span>
+    <span id="srInfo">—</span>
+    <span class="push"></span>
+    <span>Clouds DSP © Émilie Gillet, MIT — not a Mutable Instruments product</span>
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+
+/* ───────────────────────────────────────────────────────────────────────────
+   SAMPLES — drop audio files into WebApps/samples/ and list them here.
+   Anything the browser can decode works (mp3, wav, ogg, m4a, flac).
+   ─────────────────────────────────────────────────────────────────────────── */
+const SAMPLES = [
+  // { name: "Rhodes",  file: "samples/rhodes.mp3" },
+  // { name: "Voice",   file: "samples/voice.wav"  },
+  // { name: "Strings", file: "samples/strings.mp3" },
+];
+
+/* ───────────────────────────────────────────────────────────────────────────
+   DSP — the audio worklet.
+
+   The seam is marked below. Today it passes audio through so the transport,
+   the loop and the whole control surface are testable end to end. The real
+   engine is the Clouds firmware compiled to WebAssembly; when that module
+   lands it is instantiated here and `process()` hands it 32-frame blocks at
+   32 kHz exactly as the plug-in does.
+   ─────────────────────────────────────────────────────────────────────────── */
+const WORKLET_SRC = `
+class CloudiusProcessor extends AudioWorkletProcessor {
+  constructor () {
+    super();
+    this.p = {
+      pitch: 0.5, position: 0, size: 0.5, density: 0.5, texture: 0.5,
+      drywet: 0.5, spread: 0, feedback: 0, reverb: 0,
+      mode: 0, quality: 0, freeze: false, note: 0
+    };
+    this.head = 0;
+    this.port.onmessage = (e) => {
+      const d = e.data;
+      if (d.type === 'params') Object.assign(this.p, d.value);
+      else if (d.type === 'trig') this.trig = true;
+    };
+  }
+
+  process (inputs, outputs) {
+    const inp = inputs[0], out = outputs[0];
+    if (!out || out.length === 0) return true;
+
+    const oL = out[0], oR = out[1] || out[0];
+    const iL = inp && inp[0] ? inp[0] : null;
+    const iR = inp && inp[1] ? inp[1] : iL;
+    const n  = oL.length;
+
+    // ── DSP SEAM ───────────────────────────────────────────────────────────
+    // TODO: replace with the WASM build of clouds::GranularProcessor.
+    // Until then the dry signal passes and dry/wet only attenuates, so the
+    // page never pretends to be granulating something it is not.
+    const g = 1.0;
+    for (let i = 0; i < n; i++) {
+      oL[i] = iL ? iL[i] * g : 0;
+      oR[i] = iR ? iR[i] * g : 0;
+    }
+    // ───────────────────────────────────────────────────────────────────────
+
+    // The recording head keeps moving so the buffer readout is honest about
+    // freeze even while the engine is a stub.
+    if (!this.p.freeze) {
+      const secs = [1.02, 1.86, 4.09, 7.42][this.p.quality] || 1.02;
+      this.head = (this.head + n / (sampleRate * secs)) % 1;
+    }
+    if ((currentFrame & 2047) < n) {
+      this.port.postMessage({ head: this.head });
+    }
+    return true;
+  }
+}
+registerProcessor('cloudius', CloudiusProcessor);
+`;
+
+/* ── State ─────────────────────────────────────────────────────────────── */
+let ac = null, node = null, master = null, analyser = null;
+let buffer = null, source = null, playing = false, looping = true;
+let meterData = null;
+
+const params = {
+  pitch: 0.5, position: 0, size: 0.5, density: 0.5, texture: 0.5,
+  drywet: 0.5, spread: 0, feedback: 0, reverb: 0,
+  mode: 0, quality: 0, freeze: false, note: 0
+};
+
+const MODE_CAPTION = [
+  "grain cloud — size and density scatter it",
+  "wsola stretch — texture opens the filter",
+  "looping delay — pitch shifts the loop",
+  "phase vocoder — texture thins the spectrum"
+];
+const QUALITY_CAPTION = [
+  "32 kHz stereo, 16-bit — 1.02 s",
+  "32 kHz mono, 16-bit — 1.86 s",
+  "16 kHz stereo, 8-bit µ-law — 4.09 s",
+  "16 kHz mono, 8-bit µ-law — 7.42 s"
+];
+
+const $ = (id) => document.getElementById(id);
+
+/* ── Readouts ──────────────────────────────────────────────────────────── */
+const pct = (v) => Math.round(v * 100) + "%";
+
+function grainSizeMs (v) { return 1024 * Math.pow(2, 4 * v) / 32; }
+
+function densityText (v) {
+  if (v >= 0.47 && v <= 0.53) return "OFF";
+  const amt = (v > 0.5 ? (v - 0.53) : (0.47 - v)) * 2.12;
+  return (v < 0.5 ? "REG " : "RND ") + Math.round(Math.min(1, Math.max(0, amt)) * 100) + "%";
+}
+
+/* Pitch pot taper: flat near unity, +/-2 octaves at the ends. Approximates
+   the firmware's lut_quantized_pitch; the WASM build will use the real table. */
+function pitchSemitones (v) {
+  const x = (v - 0.5) * 2;                    // -1 .. +1
+  return Math.sign(x) * Math.pow(Math.abs(x), 3) * 24;
+}
+
+function readouts () {
+  $("v_pitch").textContent    = pitchSemitones(params.pitch).toFixed(1) + " st";
+  $("v_position").textContent = pct(params.position);
+  $("v_size").textContent     = params.mode === 0
+    ? Math.round(grainSizeMs(params.size)) + "ms" : pct(params.size);
+  $("v_density").textContent  = params.mode === 0 ? densityText(params.density) : pct(params.density);
+  $("v_texture").textContent  = pct(params.texture);
+  $("v_drywet").textContent   = pct(params.drywet);
+  $("v_spread").textContent   = pct(params.spread);
+  $("v_feedback").textContent = pct(params.feedback);
+  $("v_reverb").textContent   = pct(params.reverb);
+
+  $("modeCaption").textContent    = MODE_CAPTION[params.mode];
+  $("qualityCaption").textContent = QUALITY_CAPTION[params.quality];
+
+  // Read window: only granular has one this page can state exactly.
+  const secs = [1.02, 1.86, 4.09, 7.42][params.quality];
+  const win  = $("bufWin");
+  if (params.mode === 0) {
+    const w = Math.min(1, grainSizeMs(params.size) / 1000 / secs);
+    let start = (params.head || 0) - params.position - w;
+    while (start < 0) start += 1;
+    win.style.display = "block";
+    win.style.left  = (start * 100) + "%";
+    win.style.width = (w * 100) + "%";
+  } else {
+    win.style.display = "none";
+  }
+}
+
+/* ── Audio ─────────────────────────────────────────────────────────────── */
+async function initAudio () {
+  if (ac) return;
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+
+  const blob = new Blob([WORKLET_SRC], { type: "application/javascript" });
+  await ac.audioWorklet.addModule(URL.createObjectURL(blob));
+
+  node = new AudioWorkletNode(ac, "cloudius", {
+    numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2]
+  });
+  node.port.onmessage = (e) => {
+    if (typeof e.data.head === "number") {
+      params.head = e.data.head;
+      $("bufHead").style.left = (e.data.head * 100) + "%";
+    }
+  };
+
+  analyser = ac.createAnalyser();
+  analyser.fftSize = 256;
+  meterData = new Float32Array(analyser.fftSize);
+
+  master = ac.createGain();
+  master.gain.value = 0.9;
+
+  node.connect(analyser).connect(master).connect(ac.destination);
+  pushParams();
+  $("srInfo").textContent = Math.round(ac.sampleRate / 100) / 10 + " kHz host";
+  requestAnimationFrame(meterLoop);
+}
+
+function pushParams () {
+  if (node) node.port.postMessage({ type: "params", value: params });
+}
+
+function meterLoop () {
+  if (analyser) {
+    analyser.getFloatTimeDomainData(meterData);
+    let peak = 0;
+    for (let i = 0; i < meterData.length; i++) {
+      const a = Math.abs(meterData[i]);
+      if (a > peak) peak = a;
+    }
+    $("meterFill").style.width = Math.min(100, peak * 100) + "%";
+  }
+  readouts();
+  requestAnimationFrame(meterLoop);
+}
+
+function stop () {
+  if (source) { try { source.stop(); } catch (e) {} source.disconnect(); source = null; }
+  playing = false;
+  $("btnPlay").textContent = "Play";
+  $("btnPlay").classList.add("primary");
+}
+
+async function play () {
+  if (!buffer) return;
+  await initAudio();
+  if (ac.state === "suspended") await ac.resume();
+  stop();
+  source = ac.createBufferSource();
+  source.buffer = buffer;
+  source.loop = looping;
+  source.connect(node);
+  source.onended = () => { if (!looping) stop(); };
+  source.start();
+  playing = true;
+  $("btnPlay").textContent = "Stop";
+  $("btnPlay").classList.remove("primary");
+}
+
+async function loadArrayBuffer (arr, name) {
+  await initAudio();
+  buffer = await ac.decodeAudioData(arr);
+  $("srcName").textContent = name + " · " + buffer.duration.toFixed(1) + "s";
+  $("srcName").style.opacity = 1;
+  $("btnPlay").disabled = false;
+  if (playing) play();          // swap the sample without stopping the loop
+}
+
+/* ── Sample buttons ────────────────────────────────────────────────────── */
+function buildSampleRow () {
+  const row = $("sampleRow");
+  if (!SAMPLES.length) {
+    row.innerHTML = '<span style="opacity:.5">no bundled samples yet — load a file, '
+                  + 'or add entries to <code>SAMPLES</code> at the top of this file</span>';
+    return;
+  }
+  SAMPLES.forEach((s) => {
+    const b = document.createElement("button");
+    b.className = "small";
+    b.textContent = s.name;
+    b.onclick = async () => {
+      [...row.children].forEach((c) => c.setAttribute("aria-pressed", "false"));
+      b.setAttribute("aria-pressed", "true");
+      b.disabled = true;
+      try {
+        const r = await fetch(s.file);
+        if (!r.ok) throw new Error(r.status + " " + r.statusText);
+        await loadArrayBuffer(await r.arrayBuffer(), s.name);
+      } catch (err) {
+        $("srcName").textContent = "could not load " + s.file + " — " + err.message;
+        $("srcName").style.opacity = 1;
+      } finally {
+        b.disabled = false;
+      }
+    };
+    row.appendChild(b);
+  });
+}
+
+/* ── Wiring ────────────────────────────────────────────────────────────── */
+["pitch","position","size","density","texture","drywet","spread","feedback","reverb"]
+  .forEach((k) => {
+    $("p_" + k).addEventListener("input", (e) => {
+      params[k] = parseFloat(e.target.value);
+      pushParams();
+    });
+  });
+
+function segment (id, key, onChange) {
+  const seg = $(id);
+  seg.querySelectorAll("button").forEach((b) => {
+    b.onclick = () => {
+      seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", "false"));
+      b.setAttribute("aria-pressed", "true");
+      params[key] = parseInt(b.dataset.i, 10);
+      pushParams();
+      if (onChange) onChange();
+    };
+  });
+}
+segment("segMode", "mode");
+segment("segQuality", "quality");
+segment("segNote", "note");
+
+$("btnFreeze").onclick = (e) => {
+  params.freeze = !params.freeze;
+  e.currentTarget.setAttribute("aria-pressed", String(params.freeze));
+  pushParams();
+};
+
+$("btnTrig").onclick = () => { if (node) node.port.postMessage({ type: "trig" }); };
+
+$("btnLoop").onclick = (e) => {
+  looping = !looping;
+  e.currentTarget.setAttribute("aria-pressed", String(looping));
+  if (source) source.loop = looping;
+};
+
+$("btnPlay").onclick = () => (playing ? stop() : play());
+
+$("fileIn").addEventListener("change", async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  document.querySelectorAll("#sampleRow button")
+          .forEach((c) => c.setAttribute("aria-pressed", "false"));
+  await loadArrayBuffer(await f.arrayBuffer(), f.name);
+});
+
+buildSampleRow();
+readouts();
+</script>
+</body>
+</html>
