@@ -555,8 +555,15 @@ body {
   margin: 0 auto 3rem;
 }
 
+.insp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem 3rem;
+  align-items: start;
+}
+
 .insp-cat {
-  margin-bottom: 2.5rem;
+  margin-bottom: 0;
 }
 
 .insp-cat-title {
@@ -636,6 +643,10 @@ body {
 
 @media (max-width: 640px) {
   .insp-bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .insp-grid {
     grid-template-columns: 1fr;
   }
 }
