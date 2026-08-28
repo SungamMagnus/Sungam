@@ -354,8 +354,8 @@
     });
   }());
 
-  var TYPE_LABELS = { video: 'Video', music: 'Music', device: 'Device', visual: 'Visual', app: 'App' };
-  var TYPE_ICONS = { video: 'icons/youtube.svg', music: 'icons/bandcamp.svg', device: 'icons/gumroad.svg', visual: 'icons/photo.svg', app: 'icons/gumroad.svg' };
+  var TYPE_LABELS = { video: 'Video', music: 'Music', device: 'Device', visual: 'Visual', app: 'App', software: 'Software' };
+  var TYPE_ICONS = { video: 'icons/youtube.svg', music: 'icons/bandcamp.svg', device: 'icons/gumroad.svg', visual: 'icons/photo.svg', app: 'icons/gumroad.svg', software: 'icons/gumroad.svg' };
 
   var lightbox = document.getElementById('lightbox');
   var lightboxImg = document.getElementById('lightbox-img');
@@ -511,19 +511,53 @@
     return wrapper;
   }
 
+  function renderSoftwareView() {
+    var apps = PORTFOLIO_ITEMS.filter(function (i) { return i.type === 'app'; });
+    var devices = PORTFOLIO_ITEMS.filter(function (i) { return i.type === 'device'; });
+
+    var layout = document.createElement('div');
+    layout.className = 'software-layout';
+
+    var pluginsCol = document.createElement('div');
+    pluginsCol.className = 'software-col';
+    var pluginsHeader = document.createElement('h2');
+    pluginsHeader.className = 'software-col-header';
+    pluginsHeader.textContent = 'Plugins';
+    pluginsCol.appendChild(pluginsHeader);
+    apps.forEach(function (item) { pluginsCol.appendChild(renderDeviceRow(item)); });
+
+    var devicesCol = document.createElement('div');
+    devicesCol.className = 'software-col';
+    var devicesHeader = document.createElement('h2');
+    devicesHeader.className = 'software-col-header';
+    devicesHeader.textContent = 'Max for Live Devices';
+    devicesCol.appendChild(devicesHeader);
+    devices.forEach(function (item) { devicesCol.appendChild(renderDeviceRow(item)); });
+
+    layout.appendChild(pluginsCol);
+    layout.appendChild(devicesCol);
+    grid.appendChild(layout);
+  }
+
   function render() {
     grid.innerHTML = '';
     var isVisualView = activeType === 'visual';
-    var isDeviceView = activeType === 'device' || activeType === 'app';
+    var isSoftwareView = activeType === 'software';
 
-    grid.classList.toggle('grid--devices', isDeviceView);
     grid.classList.toggle('grid--visual', isVisualView);
+    grid.classList.toggle('grid--software', isSoftwareView);
+
+    if (isSoftwareView) {
+      renderSoftwareView();
+      emptyState.hidden = true;
+      return;
+    }
 
     var visible = PORTFOLIO_ITEMS.filter(function (item) {
       return item.type === activeType;
     });
     visible.forEach(function (item, index) {
-      grid.appendChild(isDeviceView ? renderDeviceRow(item) : renderCard(item, index, visible));
+      grid.appendChild(renderCard(item, index, visible));
     });
     emptyState.hidden = visible.length > 0;
   }

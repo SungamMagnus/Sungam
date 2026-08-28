@@ -244,6 +244,38 @@ body {
   margin: 3rem 0;
 }
 
+.grid--software {
+  display: block;
+}
+
+.software-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.software-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.software-col-header {
+  margin: 0 0 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.software-col .device-photo {
+  width: 180px;
+}
+
 .device-row-wrapper {
   display: flex;
   flex-direction: column;
@@ -574,6 +606,14 @@ body {
   }
 
   .device-photo {
+    width: 100%;
+  }
+
+  .software-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .software-col .device-photo {
     width: 100%;
   }
 }
