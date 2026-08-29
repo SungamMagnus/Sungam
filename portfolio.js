@@ -12,6 +12,7 @@
       type: "app",
       artist: "Sungam",
       title: "Lacze",
+      link: "https://github.com/SungamMagnus/lacze",
       image: "Pics/apps/lacze.webp",
       description: "Modulated feedback distortion, with extras.",
       releaseUrl: "https://github.com/SungamMagnus/lacze/releases"
