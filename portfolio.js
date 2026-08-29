@@ -11,6 +11,14 @@
     {
       type: "app",
       artist: "Sungam",
+      title: "Lacze",
+      image: "Pics/apps/lacze.webp",
+      description: "Modulated feedback distortion, with extras.",
+      releaseUrl: "https://github.com/SungamMagnus/lacze/releases"
+    },
+    {
+      type: "app",
+      artist: "Sungam",
       title: "Cloudius",
       link: "WebApps/cloudius-web.html",
       image: "Pics/apps/cloudius.webp",
@@ -25,13 +33,6 @@
       image: "Pics/apps/colacut.webp",
       description: "Keyframe time stretcher and transient auto-slicer with dynamic modulation routing and MIDI pitch tracking.",
       releaseUrl: "https://github.com/SungamMagnus/colacut/releases/tag/v0.4.0"
-    },
-    {
-      type: "app",
-      artist: "Sungam",
-      title: "Lacze",
-      description: "Modulated feedback distortion, with extras.",
-      releaseUrl: "https://github.com/SungamMagnus/lacze/releases"
     },
     {
       type: "app",
