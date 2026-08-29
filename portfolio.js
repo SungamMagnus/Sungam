@@ -29,6 +29,13 @@
     {
       type: "app",
       artist: "Sungam",
+      title: "Lacze",
+      description: "Modulated feedback distortion, with extras.",
+      releaseUrl: "https://github.com/SungamMagnus/lacze/releases"
+    },
+    {
+      type: "app",
+      artist: "Sungam",
       title: "Plotter",
       link: "WebApps/plotter-web.html",
       image: "Pics/apps/plotter.webp",
