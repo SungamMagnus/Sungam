@@ -11,6 +11,15 @@
     {
       type: "app",
       artist: "Sungam",
+      title: "Whoomp",
+      link: "https://sungammagnus.github.io/whoomp/",
+      image: "Pics/apps/whoomp.webp",
+      description: "Dual-engine kick drum synthesiser — subtractive and FM, through tape, cabinet and room.",
+      releaseUrl: "https://github.com/SungamMagnus/whoomp/releases"
+    },
+    {
+      type: "app",
+      artist: "Sungam",
       title: "Lacze",
       link: "https://github.com/SungamMagnus/lacze",
       image: "Pics/apps/lacze.webp",
