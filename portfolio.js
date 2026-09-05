@@ -11,47 +11,63 @@
     {
       type: "app",
       artist: "Sungam",
-      title: "Whoomp",
-      link: "https://sungammagnus.github.io/whoomp/",
-      image: "Pics/apps/whoomp.webp",
+      title: "Áhrif",
+      link: "https://github.com/SungamMagnus/ahrif",
+      description: "Transient transfer sampler — ROOT's transients clock PLAY's modulation.",
+      releaseUrl: "https://github.com/SungamMagnus/ahrif/releases"
+    },
+    {
+      type: "app",
+      artist: "Sungam",
+      title: "Afrit",
+      link: "https://github.com/SungamMagnus/afrit",
+      image: "Pics/apps/afrit.webp",
+      description: "4-track tape machine — loop, wow/flutter, cassette hiss, varispeed.",
+      releaseUrl: "https://github.com/SungamMagnus/afrit/releases"
+    },
+    {
+      type: "app",
+      artist: "Sungam",
+      title: "Stór",
+      link: "https://sungammagnus.github.io/stor/",
+      image: "Pics/apps/stor.webp",
       description: "Dual-engine kick drum synthesiser — subtractive and FM, through tape, cabinet and room.",
-      releaseUrl: "https://github.com/SungamMagnus/whoomp/releases"
+      releaseUrl: "https://github.com/SungamMagnus/stor/releases"
     },
     {
       type: "app",
       artist: "Sungam",
-      title: "Lacze",
-      link: "https://github.com/SungamMagnus/lacze",
-      image: "Pics/apps/lacze.webp",
-      description: "Modulated feedback distortion, with extras.",
-      releaseUrl: "https://github.com/SungamMagnus/lacze/releases"
+      title: "Afbökun",
+      link: "https://github.com/SungamMagnus/afbokun",
+      image: "Pics/apps/afbokun.webp",
+      description: "Multiband phase distortion.",
+      releaseUrl: "https://github.com/SungamMagnus/afbokun/releases"
     },
     {
       type: "app",
       artist: "Sungam",
-      title: "Cloudius",
-      link: "WebApps/cloudius-web.html",
-      image: "Pics/apps/cloudius.webp",
-      description: "Granular texture processor — after Clouds. Four independent blend controls with granular, stretch, delay and spectral modes.",
-      releaseUrl: "https://github.com/SungamMagnus/cloudius/releases/tag/v0.2.0"
+      title: "Sníða",
+      link: "https://github.com/SungamMagnus/snida",
+      image: "Pics/apps/snida.webp",
+      description: "Real-time time stretcher, pitch shifter and transient-driven auto-slicer.",
+      releaseUrl: "https://github.com/SungamMagnus/snida/releases"
     },
     {
       type: "app",
       artist: "Sungam",
-      title: "Colacut",
-      link: "WebApps/colacut-web.html",
-      image: "Pics/apps/colacut.webp",
-      description: "Keyframe time stretcher and transient auto-slicer with dynamic modulation routing and MIDI pitch tracking.",
-      releaseUrl: "https://github.com/SungamMagnus/colacut/releases/tag/v0.4.0"
+      title: "Skýjað",
+      link: "https://github.com/SungamMagnus/skyjad",
+      image: "Pics/apps/skyjad.webp",
+      description: "Mutable Instruments Clouds granular processor as a VST3/AU plugin.",
+      releaseUrl: "https://github.com/SungamMagnus/skyjad/releases"
     },
     {
       type: "app",
       artist: "Sungam",
-      title: "Plotter",
-      link: "WebApps/plotter-web.html",
-      image: "Pics/apps/plotter.webp",
-      description: "Draw to melody with midi export.",
-      releaseUrl: "https://github.com/SungamMagnus/plotter/releases/tag/v0.1.0"
+      title: "Teikna",
+      link: "https://github.com/SungamMagnus/teikna",
+      description: "Drawing sequencer — vertical position is pitch, horizontal is time, ink is velocity.",
+      releaseUrl: "https://github.com/SungamMagnus/teikna/releases"
     },
     {
       type: "video",
