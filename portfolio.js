@@ -13,6 +13,7 @@
       artist: "Sungam",
       title: "Áhrif",
       link: "https://github.com/SungamMagnus/ahrif",
+      image: "Pics/apps/ahrif.webp",
       description: "Transient transfer sampler — ROOT's transients clock PLAY's modulation.",
       releaseUrl: "https://github.com/SungamMagnus/ahrif/releases"
     },
@@ -56,7 +57,7 @@
       type: "app",
       artist: "Sungam",
       title: "Skýjað",
-      link: "https://github.com/SungamMagnus/skyjad",
+      link: "https://sungam.art/WebApps/skyjad-web.html",
       image: "Pics/apps/skyjad.webp",
       description: "Mutable Instruments Clouds granular processor as a VST3/AU plugin.",
       releaseUrl: "https://github.com/SungamMagnus/skyjad/releases"
@@ -65,7 +66,8 @@
       type: "app",
       artist: "Sungam",
       title: "Teikna",
-      link: "https://github.com/SungamMagnus/teikna",
+      link: "https://sungam.art/WebApps/teikna-web.html",
+      image: "Pics/apps/teikna.webp",
       description: "Drawing sequencer — vertical position is pitch, horizontal is time, ink is velocity.",
       releaseUrl: "https://github.com/SungamMagnus/teikna/releases"
     },
