@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PLOTTER — drawing sequencer</title>
+<title>TEIKNA — drawing sequencer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -85,7 +85,7 @@
 <body>
 <div class="frame">
   <header class="masthead">
-    <h1>PLOTTER</h1>
+    <h1>TEIKNA</h1>
     <p class="tagline">draw a picture. it plays left to right.</p>
   </header>
 
@@ -522,7 +522,7 @@ function buildMidi(){
   }
   ev.sort((a,b) => a.t - b.t || a.o - b.o);
   const trk = [];
-  const name = str(`PLOTTER ${NOTE_NAMES[S.root]} ${S.scale}`);
+  const name = str(`TEIKNA ${NOTE_NAMES[S.root]} ${S.scale}`);
   trk.push(0x00,0xFF,0x03,name.length,...name);
   const upq = Math.round(60000000 / S.bpm);
   trk.push(0x00,0xFF,0x51,0x03,(upq>>16)&255,(upq>>8)&255,upq&255);
@@ -612,7 +612,7 @@ $("btnMidi").onclick = () => {
   fresh();
   if (!notes.length){ flash($("btnMidi"), "Blank"); return; }
   download(new Blob([buildMidi()], {type:"audio/midi"}),
-           `plotter_${NOTE_NAMES[S.root].replace("#","s")}-${S.scale.replace(/[^A-Za-z0-9]/g,"")}_${S.bpm}bpm.mid`);
+           `teikna_${NOTE_NAMES[S.root].replace("#","s")}-${S.scale.replace(/[^A-Za-z0-9]/g,"")}_${S.bpm}bpm.mid`);
 };
 $("btnPng").onclick = () => {
   const out = document.createElement("canvas");
@@ -620,7 +620,7 @@ $("btnPng").onclick = () => {
   const c = out.getContext("2d");
   c.fillStyle = "#fcfcfa"; c.fillRect(0,0,ART_W,ART_H);
   c.drawImage(art, 0, 0);
-  out.toBlob(b => download(b, "plotter_drawing.png"));
+  out.toBlob(b => download(b, "teikna_drawing.png"));
 };
 
 document.addEventListener("keydown", e => {

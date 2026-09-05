@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CLOUDIUS — granular texture processor</title>
+<title>SKÝJAÐ — granular texture processor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -141,12 +141,12 @@
 <div class="frame">
 
   <header class="masthead">
-    <h1>CLOUDIUS</h1>
+    <h1>SKÝJAÐ</h1>
     <p class="tagline">granular texture processor — after Clouds</p>
     <span class="meta">
       <span class="badge" id="dspBadge">DSP: idle</span>
       <span id="srInfo">—</span>
-      <a href="https://github.com/SungamMagnus/cloudius" target="_blank" rel="noopener">source ↗</a>
+      <a href="https://github.com/SungamMagnus/skyjad" target="_blank" rel="noopener">source ↗</a>
     </span>
   </header>
 
@@ -433,8 +433,8 @@ async function initAudio () {
     const blob = new Blob([WORKLET_SRC], { type: "application/javascript" });
     const [, wasm] = await Promise.all([
       ac.audioWorklet.addModule(URL.createObjectURL(blob)),
-      fetch("cloudius.wasm").then((r) => {
-        if (!r.ok) throw new Error("cloudius.wasm " + r.status);
+      fetch("skyjad.wasm").then((r) => {
+        if (!r.ok) throw new Error("skyjad.wasm " + r.status);
         return r.arrayBuffer();
       })
     ]);
